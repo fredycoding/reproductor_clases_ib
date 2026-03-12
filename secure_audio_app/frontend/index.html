@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Secure Audio Player</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">A</div>
+          <div>
+            <h1>AUDX Vault</h1>
+            <p>Encrypted local playback</p>
+          </div>
+        </div>
+
+        <section class="panel">
+          <h2>Encrypt MP3 Files</h2>
+          <button id="select-mp3-btn">Select MP3 Files</button>
+          <ul id="selected-mp3-list" class="file-list"></ul>
+          <div class="field-group">
+            <label for="encrypt-password">Encryption passphrase</label>
+            <input id="encrypt-password" type="password" minlength="10" />
+          </div>
+          <div class="field-row">
+            <input id="output-dir" type="text" readonly placeholder="Output folder" />
+            <button id="choose-output-btn">Browse</button>
+          </div>
+          <button id="encrypt-btn" class="primary">Encrypt to AUDX</button>
+        </section>
+      </aside>
+
+      <main class="content">
+        <header class="hero">
+          <div>
+            <p class="eyebrow">Desktop audio vault</p>
+            <h2 id="now-playing-title">No track selected</h2>
+            <p id="now-playing-subtitle" class="muted">Load encrypted files to start playback.</p>
+          </div>
+          <div class="hero-badge">
+            <span>Local-first</span>
+            <span>Memory-only decryption</span>
+          </div>
+        </header>
+
+        <section class="player-grid">
+          <section class="panel playlist-panel">
+            <div class="panel-header">
+              <h2>Encrypted Playlist</h2>
+              <button id="open-audx-btn">Open AUDX Files</button>
+            </div>
+            <div class="field-group">
+              <label for="playback-password">Playback passphrase</label>
+              <input id="playback-password" type="password" minlength="10" />
+            </div>
+            <ul id="playlist" class="playlist"></ul>
+          </section>
+
+          <section class="panel controls-panel">
+            <div class="transport">
+              <button id="prev-btn" title="Previous">Prev</button>
+              <button id="play-btn" class="primary" title="Play or pause">Play/Pause</button>
+              <button id="stop-btn" title="Stop">Stop</button>
+              <button id="next-btn" title="Next">Next</button>
+            </div>
+
+            <div class="progress-block">
+              <input id="seek-bar" type="range" min="0" max="100" value="0" step="0.1" />
+              <div class="time-row">
+                <span id="elapsed-time">00:00</span>
+                <span id="total-time">00:00</span>
+              </div>
+            </div>
+
+            <div class="option-row">
+              <div class="field-group compact">
+                <label for="volume-slider">Volume</label>
+                <input id="volume-slider" type="range" min="0" max="100" value="80" />
+              </div>
+              <div class="field-group compact">
+                <label for="repeat-select">Repeat</label>
+                <select id="repeat-select">
+                  <option value="off">Off</option>
+                  <option value="all">All</option>
+                  <option value="one">One</option>
+                </select>
+              </div>
+              <label class="toggle">
+                <input id="shuffle-toggle" type="checkbox" />
+                <span>Shuffle</span>
+              </label>
+            </div>
+
+            <div class="shortcut-card">
+              <h3>Keyboard shortcuts</h3>
+              <p><kbd>Space</kbd> play or pause</p>
+              <p><kbd>Left</kbd>/<kbd>Right</kbd> seek 5s</p>
+              <p><kbd>Up</kbd>/<kbd>Down</kbd> volume</p>
+              <p><kbd>N</kbd> next, <kbd>P</kbd> previous</p>
+            </div>
+          </section>
+        </section>
+
+        <footer class="status-bar">
+          <span id="status-text">Ready</span>
+        </footer>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+  </html>

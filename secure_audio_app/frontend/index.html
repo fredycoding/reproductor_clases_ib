@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Secure Audio Player</title>
-    <link rel="stylesheet" href="styles.css" />
+    <title data-i18n="app.title">Secure Audio Player</title>
+    <link rel="stylesheet" href="styles.css?v=20260312" />
   </head>
   <body>
     <div class="app-shell">
@@ -12,8 +12,8 @@
         <div class="brand">
           <div class="brand-mark">A</div>
           <div>
-            <h1>AUDX Vault</h1>
-            <p data-i18n="brand.tagline">Encrypted local playback</p>
+            <h1>Audio Studio</h1>
+            <p data-i18n="brand.tagline">Reproduccion local de audio</p>
           </div>
         </div>
 
@@ -60,7 +60,7 @@
               <p class="eyebrow" data-i18n="admin.zone">Zona de administrador</p>
               <h2 data-i18n="admin.hero_title">Encriptar y preparar biblioteca</h2>
               <p class="muted" data-i18n="admin.hero_subtitle">
-                Selecciona MP3, define la clave y genera archivos .audx para distribucion segura.
+                Selecciona MP3, define la clave y prepara la biblioteca para reproduccion.
               </p>
             </div>
             <div class="hero-badge">
@@ -79,16 +79,16 @@
             </section>
 
             <section class="panel">
-              <h2 data-i18n="admin.output_title">Configuracion de salida</h2>
+                <h2 data-i18n="admin.output_title">Configuracion de salida</h2>
               <div class="field-group">
-                <label for="encrypt-password" data-i18n="admin.encrypt_password">Clave de encriptacion</label>
+                <label for="encrypt-password" data-i18n="admin.encrypt_password">Clave de acceso</label>
                 <input id="encrypt-password" type="password" minlength="10" />
               </div>
               <div class="field-row">
                 <input id="output-dir" type="text" readonly data-i18n-placeholder="admin.output_placeholder" />
                 <button id="choose-output-btn" data-i18n="admin.browse">Examinar</button>
               </div>
-              <button id="encrypt-btn" class="primary" data-i18n="admin.encrypt_button">Encriptar a AUDX</button>
+              <button id="encrypt-btn" class="primary" data-i18n="admin.encrypt_button">Preparar biblioteca</button>
             </section>
           </section>
         </section>
@@ -102,19 +102,19 @@
             </div>
             <div class="hero-badge">
               <span data-i18n="mode.user">Usuario</span>
-              <span data-i18n="user.badge_memory">Memory-only decryption</span>
             </div>
           </header>
 
           <section class="player-grid">
             <section class="panel playlist-panel">
               <div class="panel-header">
-                <h2 data-i18n="user.playlist_title">Encrypted Playlist</h2>
-                <button id="open-audx-btn" data-i18n="user.open_audx">Open AUDX Files</button>
+                <h2 data-i18n="user.playlist_title">Biblioteca de audio</h2>
+                <button id="open-audx-btn" data-i18n="user.open_audx">Abrir biblioteca</button>
               </div>
-              <div class="field-group">
-                <label for="playback-password" data-i18n="user.playback_passphrase">Playback passphrase</label>
+              <div id="playback-auth-panel" class="field-group hidden">
+                <label for="playback-password" data-i18n="user.playback_passphrase">Clave de reproduccion</label>
                 <input id="playback-password" type="password" minlength="10" />
+                <button id="load-library-btn" class="primary" data-i18n="user.load_library">Cargar biblioteca</button>
               </div>
               <ul id="playlist" class="playlist"></ul>
             </section>
@@ -140,18 +140,6 @@
                   <label for="volume-slider" data-i18n="controls.volume">Volume</label>
                   <input id="volume-slider" type="range" min="0" max="100" value="80" />
                 </div>
-                <div class="field-group compact">
-                  <label for="repeat-select" data-i18n="controls.repeat">Repeat</label>
-                  <select id="repeat-select">
-                    <option value="off" data-i18n="controls.repeat_off">Off</option>
-                    <option value="all" data-i18n="controls.repeat_all">All</option>
-                    <option value="one" data-i18n="controls.repeat_one">One</option>
-                  </select>
-                </div>
-                <label class="toggle">
-                  <input id="shuffle-toggle" type="checkbox" />
-                  <span data-i18n="controls.shuffle">Shuffle</span>
-                </label>
               </div>
 
               <div class="shortcut-card">
@@ -171,6 +159,6 @@
       </main>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=20260312"></script>
   </body>
 </html>

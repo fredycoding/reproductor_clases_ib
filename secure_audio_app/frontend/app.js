@@ -1,6 +1,7 @@
 const TRANSLATIONS = {
   es: {
-    "brand.tagline": "Reproduccion local encriptada",
+    "app.title": "Secure Audio Player",
+    "brand.tagline": "Reproduccion local de audio",
     "lang.title": "Idioma / Language",
     "mode.title": "Modo",
     "mode.user": "Usuario",
@@ -9,38 +10,33 @@ const TRANSLATIONS = {
     "mode.lock_admin": "Bloquear admin",
     "summary.title": "Resumen",
     "mode.desc_locked": "Solo el modo usuario esta disponible hasta desbloquear admin.",
-    "summary.user_locked": "Usa la zona de usuario para reproducir archivos .audx.",
+    "summary.user_locked": "Usa la zona de usuario para reproducir tu biblioteca de audio.",
     "summary.admin": "Esta zona esta pensada para preparar la biblioteca segura antes de distribuirla.",
-    "summary.user": "Esta zona esta pensada para cargar la biblioteca cifrada y reproducirla.",
+    "summary.user": "Esta zona esta pensada para cargar y reproducir la biblioteca.",
     "admin.auth_title": "Ingresar codigo de administrador",
     "admin.code_label": "Codigo admin",
     "admin.unlock": "Desbloquear",
     "admin.zone": "Zona de administrador",
-    "admin.hero_title": "Encriptar y preparar biblioteca",
-    "admin.hero_subtitle": "Selecciona MP3, define la clave y genera archivos .audx para distribucion segura.",
-    "admin.badge_encrypt": "Cifrado local",
+    "admin.hero_title": "Preparar biblioteca",
+    "admin.hero_subtitle": "Selecciona MP3, define la clave y prepara la biblioteca para reproduccion.",
+    "admin.badge_encrypt": "Gestion local",
     "admin.mp3_title": "Archivos MP3",
     "admin.select_mp3": "Seleccionar MP3",
     "admin.output_title": "Configuracion de salida",
-    "admin.encrypt_password": "Clave de encriptacion",
+    "admin.encrypt_password": "Clave de acceso",
     "admin.output_placeholder": "Carpeta de salida",
     "admin.browse": "Examinar",
-    "admin.encrypt_button": "Encriptar a AUDX",
+    "admin.encrypt_button": "Preparar biblioteca",
     "user.zone": "Zona de usuario",
-    "user.badge_memory": "Desencriptado solo en memoria",
-    "user.playlist_title": "Lista encriptada",
-    "user.open_audx": "Abrir archivos AUDX",
+    "user.playlist_title": "Biblioteca de audio",
+    "user.open_audx": "Abrir biblioteca",
     "user.playback_passphrase": "Clave de reproduccion",
+    "user.load_library": "Cargar biblioteca",
     "controls.prev": "Anterior",
     "controls.play_pause": "Play/Pausa",
     "controls.stop": "Detener",
     "controls.next": "Siguiente",
     "controls.volume": "Volumen",
-    "controls.repeat": "Repetir",
-    "controls.repeat_off": "Off",
-    "controls.repeat_all": "Todas",
-    "controls.repeat_one": "Una",
-    "controls.shuffle": "Aleatorio",
     "shortcuts.title": "Atajos de teclado",
     "shortcuts.play_pause": "Espacio play o pausa",
     "shortcuts.seek": "Izq/Der mover 5s",
@@ -52,20 +48,22 @@ const TRANSLATIONS = {
     "status.admin_locked": "Admin bloqueado.",
     "status.admin_lock_error": "No se pudo bloquear admin.",
     "status.admin_selected_mp3": "{count} archivo(s) MP3 seleccionado(s).",
-    "status.admin_encrypted": "{count} archivo(s) encriptado(s) a AUDX.",
+    "status.admin_encrypted": "{count} archivo(s) procesado(s) en la biblioteca.",
     "status.need_playback_pass": "Ingresa primero la clave de reproduccion.",
-    "status.playlist_loaded": "{count} pista(s) encriptada(s) cargada(s).",
-    "status.mode_admin_unlocked": "Zona admin desbloqueada.",
+    "status.library_files_selected": "{count} archivo(s) seleccionado(s). Ingresa la clave para cargar.",
+    "status.library_not_selected": "Primero debes seleccionar archivos de biblioteca.",
+    "status.playlist_loaded": "{count} pista(s) cargada(s).",
     "status.mode_admin_desc": "Gestiona los MP3 y genera archivos protegidos.",
-    "status.mode_user_desc": "Reproduce archivos AUDX como usuario final.",
+    "status.mode_user_desc": "Reproduce tus pistas como usuario final.",
     "status.mode_need_code": "Ingresa el codigo para habilitar el modo administrador.",
     "player.no_track": "Sin pista seleccionada",
-    "player.subtitle_idle": "Carga archivos encriptados para iniciar reproduccion.",
+    "player.subtitle_idle": "Carga tu biblioteca para iniciar reproduccion.",
     "player.subtitle_playing": "Reproduccion activa.",
     "player.subtitle_paused": "Reproduccion en pausa.",
   },
   en: {
-    "brand.tagline": "Encrypted local playback",
+    "app.title": "Secure Audio Player",
+    "brand.tagline": "Local audio playback",
     "lang.title": "Language / Idioma",
     "mode.title": "Mode",
     "mode.user": "User",
@@ -74,38 +72,33 @@ const TRANSLATIONS = {
     "mode.lock_admin": "Lock admin",
     "summary.title": "Summary",
     "mode.desc_locked": "Only user mode is available until admin is unlocked.",
-    "summary.user_locked": "Use user mode to play .audx files.",
-    "summary.admin": "This area is for preparing the secure library before distribution.",
-    "summary.user": "This area is for loading and playing the encrypted library.",
+    "summary.user_locked": "Use user mode to play your audio library.",
+    "summary.admin": "This area is for preparing the library before distribution.",
+    "summary.user": "This area is for loading and playing your library.",
     "admin.auth_title": "Enter administrator code",
     "admin.code_label": "Admin code",
     "admin.unlock": "Unlock",
     "admin.zone": "Administrator zone",
-    "admin.hero_title": "Encrypt and prepare library",
-    "admin.hero_subtitle": "Select MP3 files, set passphrase, and generate .audx files for secure distribution.",
-    "admin.badge_encrypt": "Local encryption",
+    "admin.hero_title": "Prepare library",
+    "admin.hero_subtitle": "Select MP3 files, set passphrase, and prepare the library for playback.",
+    "admin.badge_encrypt": "Local management",
     "admin.mp3_title": "MP3 files",
     "admin.select_mp3": "Select MP3",
     "admin.output_title": "Output configuration",
-    "admin.encrypt_password": "Encryption passphrase",
+    "admin.encrypt_password": "Access passphrase",
     "admin.output_placeholder": "Output folder",
     "admin.browse": "Browse",
-    "admin.encrypt_button": "Encrypt to AUDX",
+    "admin.encrypt_button": "Prepare library",
     "user.zone": "User zone",
-    "user.badge_memory": "Memory-only decryption",
-    "user.playlist_title": "Encrypted playlist",
-    "user.open_audx": "Open AUDX files",
+    "user.playlist_title": "Audio library",
+    "user.open_audx": "Open library",
     "user.playback_passphrase": "Playback passphrase",
+    "user.load_library": "Load library",
     "controls.prev": "Previous",
     "controls.play_pause": "Play/Pause",
     "controls.stop": "Stop",
     "controls.next": "Next",
     "controls.volume": "Volume",
-    "controls.repeat": "Repeat",
-    "controls.repeat_off": "Off",
-    "controls.repeat_all": "All",
-    "controls.repeat_one": "One",
-    "controls.shuffle": "Shuffle",
     "shortcuts.title": "Keyboard shortcuts",
     "shortcuts.play_pause": "Space play or pause",
     "shortcuts.seek": "Left/Right seek 5s",
@@ -117,15 +110,16 @@ const TRANSLATIONS = {
     "status.admin_locked": "Admin locked.",
     "status.admin_lock_error": "Could not lock admin.",
     "status.admin_selected_mp3": "{count} MP3 file(s) selected.",
-    "status.admin_encrypted": "{count} file(s) encrypted to AUDX.",
+    "status.admin_encrypted": "{count} file(s) processed into the library.",
     "status.need_playback_pass": "Enter playback passphrase first.",
-    "status.playlist_loaded": "{count} encrypted track(s) loaded.",
-    "status.mode_admin_unlocked": "Admin zone unlocked.",
+    "status.library_files_selected": "{count} file(s) selected. Enter passphrase to load.",
+    "status.library_not_selected": "You must select library files first.",
+    "status.playlist_loaded": "{count} track(s) loaded.",
     "status.mode_admin_desc": "Manage MP3 files and generate protected files.",
-    "status.mode_user_desc": "Play AUDX files as end user.",
+    "status.mode_user_desc": "Play tracks as end user.",
     "status.mode_need_code": "Enter the code to enable administrator mode.",
     "player.no_track": "No track selected",
-    "player.subtitle_idle": "Load encrypted files to start playback.",
+    "player.subtitle_idle": "Load your library to start playback.",
     "player.subtitle_playing": "Playback is active.",
     "player.subtitle_paused": "Playback is paused.",
   },
@@ -134,10 +128,11 @@ const TRANSLATIONS = {
 const state = {
   selectedMp3Files: [],
   playlist: [],
+  pendingLibraryFiles: [],
   playbackPassword: "",
   currentState: null,
   currentMode: "user",
-  language: window.localStorage.getItem("audx_lang") || "es",
+  language: "es",
   admin: {
     hasPin: true,
     unlocked: false,
@@ -167,6 +162,8 @@ const els = {
   outputDir: document.getElementById("output-dir"),
   encryptBtn: document.getElementById("encrypt-btn"),
   openAudxBtn: document.getElementById("open-audx-btn"),
+  playbackAuthPanel: document.getElementById("playback-auth-panel"),
+  loadLibraryBtn: document.getElementById("load-library-btn"),
   playbackPassword: document.getElementById("playback-password"),
   playlist: document.getElementById("playlist"),
   playBtn: document.getElementById("play-btn"),
@@ -177,12 +174,19 @@ const els = {
   elapsedTime: document.getElementById("elapsed-time"),
   totalTime: document.getElementById("total-time"),
   volumeSlider: document.getElementById("volume-slider"),
-  repeatSelect: document.getElementById("repeat-select"),
-  shuffleToggle: document.getElementById("shuffle-toggle"),
   statusText: document.getElementById("status-text"),
   nowPlayingTitle: document.getElementById("now-playing-title"),
   nowPlayingSubtitle: document.getElementById("now-playing-subtitle"),
 };
+
+try {
+  const savedLang = window.localStorage.getItem("audx_lang");
+  if (savedLang === "es" || savedLang === "en") {
+    state.language = savedLang;
+  }
+} catch (_error) {
+  state.language = "es";
+}
 
 function t(key, vars = {}) {
   const dict = TRANSLATIONS[state.language] || TRANSLATIONS.es;
@@ -195,6 +199,7 @@ function t(key, vars = {}) {
 
 function applyTranslations() {
   document.documentElement.lang = state.language;
+  document.title = t("app.title");
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.dataset.i18n);
   });
@@ -209,7 +214,9 @@ function applyTranslations() {
 
 function setLanguage(language) {
   state.language = language === "en" ? "en" : "es";
-  window.localStorage.setItem("audx_lang", state.language);
+  try {
+    window.localStorage.setItem("audx_lang", state.language);
+  } catch (_error) {}
   applyTranslations();
 }
 
@@ -229,7 +236,6 @@ function updateModeTexts() {
     els.adminAuthTitle.textContent = t("admin.auth_title");
     return;
   }
-
   if (state.currentMode === "admin") {
     els.modeDescription.textContent = t("status.mode_admin_desc");
     els.sidebarSummary.textContent = t("summary.admin");
@@ -256,18 +262,15 @@ function setMode(mode) {
 function setAdminState(admin) {
   state.admin.hasPin = !!admin?.has_pin;
   state.admin.unlocked = !!admin?.unlocked;
-
   els.adminModeBtn.disabled = !state.admin.unlocked;
   els.adminAccessBtn.classList.toggle("hidden", state.admin.unlocked);
   els.adminLockBtn.classList.toggle("hidden", !state.admin.unlocked);
-
   if (state.admin.unlocked) {
     els.adminAuthPanel.classList.add("hidden");
   }
   if (!state.admin.unlocked && state.currentMode === "admin") {
     setMode("user");
   }
-
   updateModeTexts();
 }
 
@@ -334,7 +337,6 @@ function renderPlaylist() {
     const li = document.createElement("li");
     const active = state.currentState && state.currentState.current_index === index;
     if (active) li.classList.add("active");
-
     const button = document.createElement("button");
     button.textContent = `${item.title}${item.artist ? ` - ${item.artist}` : ""} (${formatTime(item.duration)})`;
     button.addEventListener("click", () => playIndex(index));
@@ -347,8 +349,6 @@ function applyPlayerState(nextState) {
   state.currentState = nextState;
   renderPlaylist();
   els.volumeSlider.value = nextState.volume;
-  els.repeatSelect.value = nextState.repeat_mode;
-  els.shuffleToggle.checked = nextState.shuffle_enabled;
   els.seekBar.max = Math.max(nextState.duration_seconds || 0, 1);
   if (!els.seekBar.matches(":active")) {
     els.seekBar.value = nextState.position_seconds || 0;
@@ -413,13 +413,24 @@ async function encryptSelectedFiles() {
 async function openAudxFiles() {
   const picked = await callApi("browse_encrypted_files");
   if (!picked.files || !picked.files.length) return;
-  const password = els.playbackPassword.value;
+  state.pendingLibraryFiles = picked.files;
+  els.playbackAuthPanel.classList.remove("hidden");
+  els.playbackPassword.focus();
+  setStatus(t("status.library_files_selected", { count: state.pendingLibraryFiles.length }));
+}
+
+async function loadSelectedLibrary() {
+  if (!state.pendingLibraryFiles.length) {
+    setStatus(t("status.library_not_selected"), true);
+    return;
+  }
+  const password = els.playbackPassword.value.trim();
   if (!password) {
     setStatus(t("status.need_playback_pass"), true);
     return;
   }
   state.playbackPassword = password;
-  const response = await callApi("load_playlist", JSON.stringify(picked.files), password);
+  const response = await callApi("load_playlist", JSON.stringify(state.pendingLibraryFiles), password);
   if (!response.ok) {
     setStatus(response.error, true);
     return;
@@ -500,13 +511,12 @@ els.adminAccessBtn.addEventListener("click", toggleAdminPanel);
 els.adminLockBtn.addEventListener("click", lockAdmin);
 els.adminCodeUnlockBtn.addEventListener("click", unlockAdmin);
 els.openAudxBtn.addEventListener("click", openAudxFiles);
+els.loadLibraryBtn.addEventListener("click", loadSelectedLibrary);
 els.playBtn.addEventListener("click", () => sendPlaybackCommand("toggle"));
 els.stopBtn.addEventListener("click", () => sendPlaybackCommand("stop"));
 els.prevBtn.addEventListener("click", () => sendPlaybackCommand("previous"));
 els.nextBtn.addEventListener("click", () => sendPlaybackCommand("next"));
 els.seekBar.addEventListener("change", () => sendPlaybackCommand("seek", Number(els.seekBar.value)));
 els.volumeSlider.addEventListener("input", () => sendPlaybackCommand("volume", Number(els.volumeSlider.value)));
-els.repeatSelect.addEventListener("change", () => sendPlaybackCommand("repeat", els.repeatSelect.value));
-els.shuffleToggle.addEventListener("change", () => sendPlaybackCommand("shuffle", els.shuffleToggle.checked));
 
 window.addEventListener("pywebviewready", bootstrap);

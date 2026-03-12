@@ -1,97 +1,90 @@
 # Secure Audio Player
 
-Cross-platform desktop application in Python for encrypting MP3 files into a proprietary `.audx` container and playing them locally through a bundled desktop UI.
+Aplicacion de escritorio multiplataforma en Python para encriptar archivos MP3 en un contenedor propietario `.audx` y reproducirlos localmente con una interfaz embebida.
 
-## Stack
+## Tecnologias
 
-- Python backend
-- `pywebview` for the desktop shell and embedded local web UI
-- local HTML/CSS/JavaScript frontend
-- `cryptography` + `argon2-cffi` for authenticated encryption and key derivation
-- `python-vlc` for playback from memory
+- Backend en Python
+- `pywebview` para la ventana de escritorio con UI web local
+- Frontend local en HTML/CSS/JavaScript
+- `cryptography` + `argon2-cffi` para cifrado autenticado y derivacion de clave
+- `python-vlc` para reproduccion desde memoria
 
-## Features
+## Caracteristicas
 
-- Encrypt one or more MP3 files into `.audx`
-- AES-256-GCM authenticated encryption with per-file random nonce
-- Argon2id key derivation with per-file salt, with secure scrypt fallback if Argon2id is unavailable in the runtime
-- Playback only from encrypted `.audx` files created by this app
-- No export of decrypted files
-- No persistent decrypted cache
-- Playlist, seek, volume, next/previous, repeat, shuffle, keyboard shortcuts
-- No activation token required
+- Encriptacion de uno o varios MP3 a `.audx`
+- Cifrado autenticado `AES-256-GCM` con nonce aleatorio por archivo
+- Derivacion de clave con `Argon2id` y fallback seguro a `scrypt` si `Argon2id` no esta disponible
+- Reproduccion solo desde archivos `.audx`
+- Sin exportacion de audio desencriptado
+- Sin cache persistente de audio desencriptado
+- Reproductor completo: play/pause, stop, seek, volumen, anterior/siguiente, repeat, shuffle y atajos de teclado
+- Modo administrador protegido con codigo
+- Frontend bilingue: espanol e ingles (selector `ES/EN`)
+- No requiere internet para uso normal
 
-## Project Structure
+## Estructura del proyecto
 
-- `app.py`: desktop entry point
-- `secure_audio_app/api.py`: bridge exposed to `pywebview`
-- `secure_audio_app/crypto.py`: `.audx` format and encryption
-- `secure_audio_app/player.py`: in-memory playback layer on VLC
-- `secure_audio_app/frontend/`: local embedded UI
-- `tests/`: unit tests
-- `architecture.md`: system design
-- `threat_model.md`: limitations and security goals
-- `file_format_spec.md`: `.audx` specification
-- `development_plan.md`: implementation phases
+- `app.py`: punto de entrada de escritorio
+- `secure_audio_app/api.py`: puente entre frontend y backend (`pywebview`)
+- `secure_audio_app/crypto.py`: cifrado/descifrado y formato `.audx`
+- `secure_audio_app/player.py`: capa de reproduccion en memoria con VLC
+- `secure_audio_app/frontend/`: interfaz local
+- `tests/`: pruebas unitarias
+- `architecture.md`: arquitectura
+- `threat_model.md`: modelo de amenazas
+- `file_format_spec.md`: especificacion del formato `.audx`
+- `development_plan.md`: plan de desarrollo
 
-## Setup
+## Instalacion
 
-1. Create a virtual environment.
-2. Install dependencies:
+1. Crear un entorno virtual (recomendado).
+2. Instalar dependencias:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Ensure VLC is installed on the target machine.
-   `python-vlc` needs the native VLC runtime available on Windows, macOS, and Linux.
+3. Verificar que VLC nativo este instalado en el sistema.
+   `python-vlc` depende de la libreria VLC del SO (Windows/macOS/Linux).
 
-## Run
+## Ejecucion
 
 ```bash
 python app.py
 ```
 
-## Sample Encrypted File Workflow
+## Flujo de uso
 
-1. Launch the app.
-2. Select one or more MP3 files in the encryption panel.
-3. Choose a strong passphrase and an output directory.
-4. Encrypt the files into `.audx`.
-5. Open the generated `.audx` files in the playlist panel.
-6. Enter the same passphrase and play them from the encrypted library.
+1. Abrir la aplicacion (inicia en modo usuario).
+2. Cambiar idioma con `ES/EN` si lo deseas.
+3. Pulsar `Ingresar al admin` y escribir el codigo de administrador.
+4. En modo administrador:
+   seleccionar MP3, definir clave y carpeta de salida, luego encriptar a `.audx`.
+5. Volver a modo usuario:
+   abrir archivos `.audx`, escribir clave de reproduccion y reproducir.
 
-## Security Notes
+## Seguridad
 
-- The original MP3 is not required after encryption.
-- Playback is designed to decrypt only into memory and stream bytes directly to VLC callbacks.
-- The app does not provide a decrypted export feature and does not keep a plaintext cache on disk.
-- The project includes malformed file checks and authenticated decryption checks.
+- El MP3 original no se necesita despues de encriptar.
+- La reproduccion se hace con desencriptado en memoria.
+- No existe una funcion para exportar el audio desencriptado.
+- Se validan archivos malformados e integridad/autenticidad al descifrar.
 
-## Threat Model Summary
+Limitacion importante:
+ninguna app de escritorio puede garantizar prevencion absoluta de copia cuando el audio ya se esta reproduciendo. Un atacante tecnico aun podria capturar audio por loopback del sistema, instrumentacion del proceso o tecnicas analogicas.
 
-This project protects audio at rest and raises the cost of casual extraction. It does not provide unbreakable DRM.
+Consulta detalles en [threat_model.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/threat_model.md#L1).
 
-No desktop player can fully prevent copying once audio is being played. A determined attacker may still capture audio through:
-
-- OS loopback recording
-- process instrumentation
-- memory inspection
-- analog recording
-
-See [threat_model.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/threat_model.md#L1) for details.
-
-## Tests
-
-Run the unit tests:
+## Pruebas
 
 ```bash
 python -m unittest discover -s tests
 ```
 
-## Packaging
+## Empaquetado
 
-Use separate builds per operating system. Build on each target OS rather than cross-compiling.
+Generar build en cada SO destino (no cross-build).
 
 ### Windows
 
@@ -114,7 +107,7 @@ pip install pyinstaller
 pyinstaller --noconfirm --windowed --name SecureAudioPlayer --add-data "secure_audio_app/frontend:secure_audio_app/frontend" app.py
 ```
 
-## Build Scripts
+## Scripts de build
 
 - [build_windows.ps1](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/scripts/build_windows.ps1)
 - [build_macos.sh](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/scripts/build_macos.sh)

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 from dataclasses import asdict
 from typing import Any
@@ -9,6 +11,8 @@ import webview
 from .crypto import AuthenticationError, AudxCrypto, InvalidContainerError, SecureAudioError
 from .player import SecureVlcPlayer
 
+ADMIN_CODE_SHA256 = "c9bc710759f356523ecc7669b32e94c88b2c6e55496dc75fa23247156e72ca09"
+
 
 class AppApi:
     def __init__(self) -> None:
@@ -16,28 +20,69 @@ class AppApi:
         self.player = SecureVlcPlayer(self.crypto)
         self.window: webview.Window | None = None
         self.pending_encrypt_files: list[str] = []
+        self.admin_unlocked = False
 
     def set_window(self, window: webview.Window) -> None:
         self.window = window
 
     def bootstrap(self) -> dict[str, Any]:
-        return {"ok": True, "version": "1.0.0"}
+        return {
+            "ok": True,
+            "version": "1.0.0",
+            "admin": {
+                "has_pin": True,
+                "unlocked": self.admin_unlocked,
+            },
+        }
+
+    def admin_status(self) -> dict[str, Any]:
+        return {
+            "ok": True,
+            "admin": {
+                "has_pin": True,
+                "unlocked": self.admin_unlocked,
+            },
+        }
+
+    def admin_unlock(self, admin_code: str) -> dict[str, Any]:
+        try:
+            candidate = hashlib.sha256(admin_code.strip().encode("utf-8")).hexdigest()
+            if not hmac.compare_digest(candidate, ADMIN_CODE_SHA256):
+                raise SecureAudioError("Codigo de administrador incorrecto.")
+            self.admin_unlocked = True
+            return {"ok": True, "admin": {"has_pin": True, "unlocked": True}}
+        except SecureAudioError as exc:
+            return {"ok": False, "error": str(exc)}
+
+    def admin_lock(self) -> dict[str, Any]:
+        self.admin_unlocked = False
+        self.pending_encrypt_files = []
+        return {"ok": True, "admin": {"has_pin": True, "unlocked": False}}
 
     def browse_mp3_files(self) -> dict[str, Any]:
-        selected = self._require_window().create_file_dialog(
-            webview.OPEN_DIALOG,
-            allow_multiple=True,
-            file_types=("MP3 files (*.mp3)",),
-        )
-        self.pending_encrypt_files = list(selected or [])
-        return {"ok": True, "files": self.pending_encrypt_files}
+        try:
+            self._require_admin_unlocked()
+            selected = self._require_window().create_file_dialog(
+                webview.OPEN_DIALOG,
+                allow_multiple=True,
+                file_types=("MP3 files (*.mp3)",),
+            )
+            self.pending_encrypt_files = list(selected or [])
+            return {"ok": True, "files": self.pending_encrypt_files}
+        except (SecureAudioError, RuntimeError) as exc:
+            return {"ok": False, "error": str(exc)}
 
     def choose_output_dir(self) -> dict[str, Any]:
-        selected = self._require_window().create_file_dialog(webview.FOLDER_DIALOG)
-        return {"ok": True, "directory": selected[0] if selected else ""}
+        try:
+            self._require_admin_unlocked()
+            selected = self._require_window().create_file_dialog(webview.FOLDER_DIALOG)
+            return {"ok": True, "directory": selected[0] if selected else ""}
+        except (SecureAudioError, RuntimeError) as exc:
+            return {"ok": False, "error": str(exc)}
 
     def encrypt_selected_files(self, password: str, output_dir: str) -> dict[str, Any]:
         try:
+            self._require_admin_unlocked()
             if not self.pending_encrypt_files:
                 raise SecureAudioError("No MP3 files selected.")
             if not output_dir:
@@ -105,3 +150,7 @@ class AppApi:
         if self.window is None:
             raise RuntimeError("Application window is not ready.")
         return self.window
+
+    def _require_admin_unlocked(self) -> None:
+        if not self.admin_unlocked:
+            raise SecureAudioError("Debes desbloquear la zona de administrador con el codigo.")

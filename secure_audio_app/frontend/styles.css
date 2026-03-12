@@ -103,6 +103,16 @@ textarea {
   gap: 18px;
 }
 
+.view {
+  display: none;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.view.active {
+  display: flex;
+}
+
 .hero {
   padding: 22px 24px;
   display: flex;
@@ -132,6 +142,12 @@ textarea {
   flex: 1;
 }
 
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 18px;
+}
+
 .playlist-panel,
 .controls-panel {
   background: var(--panel-2);
@@ -141,11 +157,16 @@ textarea {
 .transport,
 .option-row,
 .time-row,
-.field-row {
+.field-row,
+.mode-switch {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.mode-switch button {
+  flex: 1;
 }
 
 .field-group {
@@ -196,6 +217,20 @@ button.primary {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #03111d;
   font-weight: 700;
+}
+
+button.secondary {
+  background: rgba(83, 167, 255, 0.22);
+}
+
+button.danger {
+  background: rgba(255, 123, 123, 0.22);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .muted,
@@ -264,6 +299,10 @@ input[type="range"] {
   padding: 14px 18px;
 }
 
+.hidden {
+  display: none !important;
+}
+
 kbd {
   padding: 2px 7px;
   border-radius: 8px;
@@ -273,7 +312,8 @@ kbd {
 
 @media (max-width: 1100px) {
   .app-shell,
-  .player-grid {
+  .player-grid,
+  .admin-grid {
     grid-template-columns: 1fr;
   }
 

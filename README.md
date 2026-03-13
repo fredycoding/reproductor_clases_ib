@@ -2,7 +2,7 @@
 
 Aplicacion de escritorio en Python para preparar y reproducir una biblioteca de audio protegida.
 
-- Manual para usuarios finales: [MANUAL_USUARIO.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/MANUAL_USUARIO.md)
+- Manual para usuarios finales: [MANUAL_USUARIO.md](MANUAL_USUARIO.md)
 - En modo administrador convierte archivos `.mp3` a contenedores cifrados `.audx`.
 - En modo usuario carga y reproduce `.audx` sin exponer una opcion de exportacion de audio desencriptado.
 - La interfaz es local (HTML/CSS/JS embebida en app de escritorio con `pywebview`).
@@ -64,7 +64,7 @@ Flujo general:
 ## Python (desarrollo/build)
 
 - Python 3.10+
-- Dependencias de [`requirements.txt`](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/requirements.txt)
+- Dependencias de [`requirements.txt`](requirements.txt)
 
 Instalacion:
 
@@ -103,7 +103,7 @@ El contenedor guarda:
 - Encabezado JSON validado (algoritmo, KDF, salt, nonce, metadatos, etc.).
 - Payload cifrado y autenticado.
 
-Referencia formal: [file_format_spec.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/file_format_spec.md)
+Referencia formal: [file_format_spec.md](file_format_spec.md)
 
 ## 8) Seguridad y limites
 
@@ -115,7 +115,7 @@ Riesgos que siempre pueden existir en escenarios avanzados:
 - Instrumentacion del proceso en tiempo de ejecucion.
 - Captura analogica externa.
 
-Modelo detallado: [threat_model.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/threat_model.md)
+Modelo detallado: [threat_model.md](threat_model.md)
 
 ## 9) Pruebas
 
@@ -170,13 +170,14 @@ Verificar que el frontend este presente en el paquete (`secure_audio_app\fronten
 
 ## 13) Archivos clave del repositorio
 
-- [app.py](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/app.py)
-- [Reproductor.spec](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/Reproductor.spec)
-- [scripts/build_windows.ps1](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/scripts/build_windows.ps1)
-- [secure_audio_app/api.py](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/secure_audio_app/api.py)
-- [secure_audio_app/crypto.py](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/secure_audio_app/crypto.py)
-- [secure_audio_app/player.py](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/secure_audio_app/player.py)
-- [secure_audio_app/frontend/index.html](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/secure_audio_app/frontend/index.html)
-- [architecture.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/architecture.md)
-- [file_format_spec.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/file_format_spec.md)
-- [threat_model.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/threat_model.md)
+- [app.py](app.py)
+- [Reproductor.spec](Reproductor.spec)
+- [scripts/build_windows.ps1](scripts/build_windows.ps1)
+- [secure_audio_app/api.py](secure_audio_app/api.py)
+- [secure_audio_app/crypto.py](secure_audio_app/crypto.py)
+- [secure_audio_app/player.py](secure_audio_app/player.py)
+- [secure_audio_app/frontend/index.html](secure_audio_app/frontend/index.html)
+- [architecture.md](architecture.md)
+- [file_format_spec.md](file_format_spec.md)
+- [threat_model.md](threat_model.md)
+

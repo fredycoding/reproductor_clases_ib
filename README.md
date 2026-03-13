@@ -1,4 +1,4 @@
-﻿# Reproductor Seguro de Audio (Secure Audio Player)
+# Reproductor Seguro de Audio (Secure Audio Player)
 
 Aplicacion de escritorio en Python para preparar y reproducir una biblioteca de audio protegida.
 
@@ -145,8 +145,45 @@ Salida esperada:
 
 ## 11) Distribucion en macOS (recomendado con venv)
 
-Si en macOS te funciono solo con `venv`, ese es el flujo correcto para build reproducible.
+El flujo recomendado ahora es usar el script oficial de macOS, que:
 
+- instala/actualiza `pyinstaller`,
+- limpia `build/`, `dist/` y `release/`,
+- construye `dist/Reproductor.app`,
+- valida arquitectura con `lipo -info`,
+- genera `release/Reproductor-<arch>.dmg`.
+
+## 11.0 Comandos rapidos (macOS)
+
+```bash
+# 1) Entrar al proyecto
+cd /ruta/al/proyecto
+
+# 2) Crear y activar venv
+python3 -m venv .venv
+source .venv/bin/activate
+
+# 3) Instalar dependencias
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+
+# 4) Dar permisos al script
+chmod +x scripts/build_macos.sh
+
+# 5) Build automatico segun tu Mac (arm64 en Apple Silicon / x86_64 en Intel)
+./scripts/build_macos.sh
+
+# 6) Verificar arquitectura del binario
+lipo -info "dist/Reproductor.app/Contents/MacOS/Reproductor"
+```
+
+Builds alternativos:
+
+```bash
+./scripts/build_macos.sh arm64
+./scripts/build_macos.sh x86_64
+./scripts/build_macos.sh universal2
+```
 ## 11.1 Preparacion del entorno
 
 1. Instalar Python 3.10+ y VLC en macOS.
@@ -158,61 +195,68 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-4. Instalar dependencias del proyecto y PyInstaller:
+4. Instalar dependencias del proyecto:
 
 ```bash
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python -m pip install pyinstaller
 ```
 
-5. Verificar que el entorno activo resuelve `webview`:
+5. Dar permisos de ejecucion al script (una sola vez):
 
 ```bash
-python -c "import webview; print('OK pywebview')"
+chmod +x scripts/build_macos.sh
 ```
 
-## 11.2 Build del `.app`
+## 11.2 Build de `.app` + `.dmg` con script oficial
 
 Desde el mismo `venv` activo:
 
 ```bash
-pyinstaller --noconfirm --clean --windowed --name Reproductor --add-data "secure_audio_app/frontend:secure_audio_app/frontend" app.py
+./scripts/build_macos.sh
 ```
 
-Salida esperada:
+En Apple Silicon (M1/M2/M3/M4), `auto` genera `arm64`.
+En Intel, `auto` genera `x86_64`.
+
+Tambien puedes forzar arquitectura:
+
+```bash
+./scripts/build_macos.sh arm64
+./scripts/build_macos.sh x86_64
+./scripts/build_macos.sh universal2
+```
+
+Salidas esperadas:
 
 - `dist/Reproductor.app`
+- `release/Reproductor-<arch>.dmg`
 
-## 11.3 Prueba local del `.app`
+## 11.3 Verificar arquitectura del binario
+
+```bash
+lipo -info "dist/Reproductor.app/Contents/MacOS/Reproductor"
+```
+
+Interpretacion rapida:
+
+- `arm64`: compatible con Apple Silicon (incluye M3/M4).
+- `x86_64`: Intel.
+- `x86_64 arm64`: universal.
+
+## 11.4 Prueba local antes de distribuir
 
 1. Abrir `dist/Reproductor.app`.
 2. Confirmar que carga la interfaz.
-3. Probar flujo minimo:
-   abrir biblioteca `.audx` y reproducir.
+3. Probar flujo minimo: abrir biblioteca `.audx` y reproducir.
 
-Si falla, no continues con `.dmg` hasta corregir el `.app`.
+Si falla, corregir antes de distribuir el `.dmg`.
 
-## 11.4 Crear `.dmg` para distribuir
-
-Desde la raiz del proyecto:
-
-```bash
-mkdir -p release
-hdiutil create -volname "Reproductor" -srcfolder "dist/Reproductor.app" -ov -format UDZO "release/Reproductor.dmg"
-```
-
-Salida esperada:
-
-- `release/Reproductor.dmg`
-
-## 11.5 Recomendaciones para compatibilidad en Mac
+## 11.5 Recomendaciones para distribucion publica
 
 - Construir en un Mac real (no cross-build desde Windows).
-- Construir en la misma arquitectura objetivo (Apple Silicon o Intel).
 - Mantener build y ejecucion siempre dentro del `venv` activo.
 - Para distribucion publica, firmar y notarizar con Apple (Developer ID + notarization).
-
 ## 12) Distribucion a usuarios finales
 
 ## Windows
@@ -225,7 +269,7 @@ Para usuarios no tecnicos, compartir la carpeta completa generada en `dist\Repro
 
 ## macOS
 
-1. Compartir `release/Reproductor.dmg`.
+1. Compartir `release/Reproductor-<arch>.dmg` (por ejemplo `release/Reproductor-arm64.dmg`).
 2. El usuario abre el `.dmg` y arrastra la app a Aplicaciones.
 3. Ejecutar desde Aplicaciones.
 
@@ -262,3 +306,6 @@ Verificar que el frontend este presente en el paquete (`secure_audio_app/fronten
 - [architecture.md](architecture.md)
 - [file_format_spec.md](file_format_spec.md)
 - [threat_model.md](threat_model.md)
+
+
+

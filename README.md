@@ -2,6 +2,7 @@
 
 Aplicacion de escritorio en Python para preparar y reproducir una biblioteca de audio protegida.
 
+- Manual para usuarios finales: [MANUAL_USUARIO.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/MANUAL_USUARIO.md)
 - En modo administrador convierte archivos `.mp3` a contenedores cifrados `.audx`.
 - En modo usuario carga y reproduce `.audx` sin exponer una opcion de exportacion de audio desencriptado.
 - La interfaz es local (HTML/CSS/JS embebida en app de escritorio con `pywebview`).

@@ -52,21 +52,22 @@ Flujo general:
 
 ## 4) Requisitos
 
-## Sistema operativo
+## Sistemas operativos
 
-- Windows (flujo de build y distribucion principal actual).
+- Windows 10/11 (flujo oficial de build en este repo).
+- macOS (flujo soportado para build usando `venv`, ver seccion 11).
 
-## Runtime / dependencias de sistema
+## Dependencias de sistema
 
 - VLC instalado en el sistema (requerido por `python-vlc`).
-- Microsoft Visual C++ Redistributable x64 (recomendado en equipos destino).
+- Windows: Microsoft Visual C++ Redistributable x64 (recomendado en equipos destino).
 
 ## Python (desarrollo/build)
 
-- Python 3.10+
-- Dependencias de [`requirements.txt`](requirements.txt)
+- Python 3.10+ recomendado.
+- Dependencias de [`requirements.txt`](requirements.txt).
 
-Instalacion:
+Instalacion base:
 
 ```bash
 pip install -r requirements.txt
@@ -142,37 +143,118 @@ Salida esperada:
 
 - `dist\Reproductor\Reproductor.exe`
 
-## 11) Distribucion a usuarios finales
+## 11) Distribucion en macOS (recomendado con venv)
+
+Si en macOS te funciono solo con `venv`, ese es el flujo correcto para build reproducible.
+
+## 11.1 Preparacion del entorno
+
+1. Instalar Python 3.10+ y VLC en macOS.
+2. Clonar el proyecto y entrar a la carpeta.
+3. Crear y activar entorno virtual:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+4. Instalar dependencias del proyecto y PyInstaller:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install pyinstaller
+```
+
+5. Verificar que el entorno activo resuelve `webview`:
+
+```bash
+python -c "import webview; print('OK pywebview')"
+```
+
+## 11.2 Build del `.app`
+
+Desde el mismo `venv` activo:
+
+```bash
+pyinstaller --noconfirm --clean --windowed --name Reproductor --add-data "secure_audio_app/frontend:secure_audio_app/frontend" app.py
+```
+
+Salida esperada:
+
+- `dist/Reproductor.app`
+
+## 11.3 Prueba local del `.app`
+
+1. Abrir `dist/Reproductor.app`.
+2. Confirmar que carga la interfaz.
+3. Probar flujo minimo:
+   abrir biblioteca `.audx` y reproducir.
+
+Si falla, no continues con `.dmg` hasta corregir el `.app`.
+
+## 11.4 Crear `.dmg` para distribuir
+
+Desde la raiz del proyecto:
+
+```bash
+mkdir -p release
+hdiutil create -volname "Reproductor" -srcfolder "dist/Reproductor.app" -ov -format UDZO "release/Reproductor.dmg"
+```
+
+Salida esperada:
+
+- `release/Reproductor.dmg`
+
+## 11.5 Recomendaciones para compatibilidad en Mac
+
+- Construir en un Mac real (no cross-build desde Windows).
+- Construir en la misma arquitectura objetivo (Apple Silicon o Intel).
+- Mantener build y ejecucion siempre dentro del `venv` activo.
+- Para distribucion publica, firmar y notarizar con Apple (Developer ID + notarization).
+
+## 12) Distribucion a usuarios finales
+
+## Windows
 
 Para usuarios no tecnicos, compartir la carpeta completa generada en `dist\Reproductor` (no solo el `.exe`).
 
-Recomendado:
-
 1. Comprimir `dist\Reproductor` en `.zip`.
-2. En el equipo destino, extraer en una ruta local (por ejemplo `C:\Reproductor`).
+2. En el equipo destino, extraer en ruta local (por ejemplo `C:\Reproductor`).
 3. Ejecutar `Reproductor.exe` con doble clic.
 
-## 12) Troubleshooting rapido
+## macOS
 
-## SmartScreen al abrir `.exe`
+1. Compartir `release/Reproductor.dmg`.
+2. El usuario abre el `.dmg` y arrastra la app a Aplicaciones.
+3. Ejecutar desde Aplicaciones.
+
+## 13) Troubleshooting rapido
+
+## SmartScreen al abrir `.exe` (Windows)
 
 Es normal en ejecutables nuevos sin firma digital. Para reducir alertas en distribucion publica, firmar el binario.
 
+## `No module named webview` (macOS)
+
+Suele indicar que se ejecuto con otro Python fuera del `venv`. Activar `venv` e instalar dependencias ahi.
+
 ## Pantalla en blanco o no abre UI
 
-Verificar que el frontend este presente en el paquete (`secure_audio_app\frontend`) y reconstruir con el script oficial.
+Verificar que el frontend este presente en el paquete (`secure_audio_app/frontend`) y reconstruir.
 
 ## Error de runtime en PC destino
 
 - Ejecutar desde disco local (no red).
 - Copiar carpeta completa de `dist\Reproductor`.
-- Verificar VC++ x64 y VLC instalado.
+- Verificar VLC y dependencias del sistema.
 
-## 13) Archivos clave del repositorio
+## 14) Archivos clave del repositorio
 
 - [app.py](app.py)
 - [Reproductor.spec](Reproductor.spec)
 - [scripts/build_windows.ps1](scripts/build_windows.ps1)
+- [scripts/build_macos.sh](scripts/build_macos.sh)
 - [secure_audio_app/api.py](secure_audio_app/api.py)
 - [secure_audio_app/crypto.py](secure_audio_app/crypto.py)
 - [secure_audio_app/player.py](secure_audio_app/player.py)
@@ -180,4 +262,3 @@ Verificar que el frontend este presente en el paquete (`secure_audio_app\fronten
 - [architecture.md](architecture.md)
 - [file_format_spec.md](file_format_spec.md)
 - [threat_model.md](threat_model.md)
-

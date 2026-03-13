@@ -1,4 +1,4 @@
-__pycache__/
+﻿__pycache__/
 *.py[cod]
 *$py.class
 
@@ -9,6 +9,7 @@ env/
 build/
 dist/
 *.spec
+!Reproductor.spec
 
 .env
 .env.*

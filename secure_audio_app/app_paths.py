@@ -1,6 +1,7 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 
 try:
@@ -14,6 +15,8 @@ APP_AUTHOR = "LocalSecureAudio"
 
 
 def project_root() -> Path:
+    if getattr(sys, "frozen", False):
+        return Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent))
     return Path(__file__).resolve().parent.parent
 
 

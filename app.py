@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import os
 import sys
@@ -9,13 +9,23 @@ from secure_audio_app.api import AppApi
 from secure_audio_app.app_paths import frontend_dir
 
 if sys.platform.startswith("win"):
-    # Force Edge WebView2 backend selection before pywebview initializes GUI backends.
-    os.environ.setdefault("PYWEBVIEW_GUI", "edgechromium")
+    # Force PyQt5 backend selection and avoid .NET/pythonnet runtime dependency.
+    os.environ.setdefault("QT_API", "pyside6")
+    os.environ.setdefault("PYWEBVIEW_GUI", "qt")
 
 
 def main() -> None:
     api = AppApi()
     index_path = frontend_dir() / "index.html"
+    if not index_path.exists():
+        _show_windows_error(
+            "No se encontro la interfaz web de la app (index.html).\n\n"
+            "Reempaqueta incluyendo la carpeta:\n"
+            "secure_audio_app\\frontend\n\n"
+            "Tip: usa scripts\\build_windows.ps1"
+        )
+        raise SystemExit(1)
+
     window = webview.create_window(
         title="Reproductor de Audios",
         url=index_path.as_uri(),
@@ -28,28 +38,23 @@ def main() -> None:
     api.set_window(window)
     start_kwargs = {"debug": False}
     if sys.platform.startswith("win"):
-        # Force Edge WebView2 backend on Windows to avoid pythonnet/winforms dependency.
-        start_kwargs["gui"] = "edgechromium"
+        start_kwargs["gui"] = "qt"
+
     try:
         webview.start(**start_kwargs)
     except Exception as exc:
-        message = str(exc)
-        if sys.platform.startswith("win") and (
-            "Python.Runtime.Loader.Initialize" in message
-            or "pythonnet" in message.lower()
-            or "clr_loader" in message.lower()
-            or "winforms" in message.lower()
-        ):
+        if sys.platform.startswith("win"):
             _show_windows_error(
                 "No se pudo iniciar la interfaz grafica.\n\n"
-                "Posibles causas en el equipo destino:\n"
-                "- Falta .NET Framework 4.8\n"
-                "- Falta Microsoft Visual C++ Redistributable x64\n"
+                "Posibles causas:\n"
+                "- Build incompleto\n"
+                "- Faltan librerias de Qt en el paquete\n"
                 "- La app se ejecuta desde una ruta de red\n\n"
+                f"Detalle tecnico:\n{exc}\n\n"
                 "Solucion recomendada:\n"
-                "1) Copiar la carpeta completa de la app a disco local\n"
-                "2) Instalar .NET Framework 4.8 y VC++ x64\n"
-                "3) Ejecutar nuevamente"
+                "1) Reconstruir con scripts\\build_windows.ps1\n"
+                "2) Copiar la carpeta completa de dist\\Reproductor\n"
+                "3) Ejecutar desde disco local"
             )
             raise SystemExit(1) from exc
         raise
@@ -68,3 +73,4 @@ def _show_windows_error(message: str) -> None:
 
 if __name__ == "__main__":
     main()
+

@@ -1,114 +1,181 @@
-# Secure Audio Player
+﻿# Reproductor Seguro de Audio (Secure Audio Player)
 
-Aplicacion de escritorio multiplataforma en Python para encriptar archivos MP3 en un contenedor propietario `.audx` y reproducirlos localmente con una interfaz embebida.
+Aplicacion de escritorio en Python para preparar y reproducir una biblioteca de audio protegida.
 
-## Tecnologias
+- En modo administrador convierte archivos `.mp3` a contenedores cifrados `.audx`.
+- En modo usuario carga y reproduce `.audx` sin exponer una opcion de exportacion de audio desencriptado.
+- La interfaz es local (HTML/CSS/JS embebida en app de escritorio con `pywebview`).
 
-- Backend en Python
-- `pywebview` para la ventana de escritorio con UI web local
-- Frontend local en HTML/CSS/JavaScript
-- `cryptography` + `argon2-cffi` para cifrado autenticado y derivacion de clave
-- `python-vlc` para reproduccion desde memoria
+## 1) Objetivo del software
 
-## Caracteristicas
+Este proyecto esta pensado para distribuir audios en un formato protegido para reproduccion local.
 
-- Encriptacion de uno o varios MP3 a `.audx`
-- Cifrado autenticado `AES-256-GCM` con nonce aleatorio por archivo
-- Derivacion de clave con `Argon2id` y fallback seguro a `scrypt` si `Argon2id` no esta disponible
-- Reproduccion solo desde archivos `.audx`
-- Sin exportacion de audio desencriptado
-- Sin cache persistente de audio desencriptado
-- Reproductor completo: play/pause, stop, seek, volumen, anterior/siguiente, repeat, shuffle y atajos de teclado
-- Modo administrador protegido con codigo
-- Frontend bilingue: espanol e ingles (selector `ES/EN`)
-- No requiere internet para uso normal
+Flujo general:
 
-## Estructura del proyecto
+1. Seleccionar MP3 en zona de administrador.
+2. Definir clave de acceso para cifrado.
+3. Generar archivos `.audx`.
+4. En zona de usuario, abrir `.audx`, ingresar clave y reproducir.
 
-- `app.py`: punto de entrada de escritorio
-- `secure_audio_app/api.py`: puente entre frontend y backend (`pywebview`)
-- `secure_audio_app/crypto.py`: cifrado/descifrado y formato `.audx`
-- `secure_audio_app/player.py`: capa de reproduccion en memoria con VLC
-- `secure_audio_app/frontend/`: interfaz local
-- `tests/`: pruebas unitarias
-- `architecture.md`: arquitectura
-- `threat_model.md`: modelo de amenazas
-- `file_format_spec.md`: especificacion del formato `.audx`
-- `development_plan.md`: plan de desarrollo
+## 2) Caracteristicas principales
 
-## Instalacion
+- Cifrado autenticado `AES-256-GCM`.
+- Derivacion de clave con `Argon2id` (fallback a `scrypt` si aplica).
+- Solo acepta MP3 como entrada para cifrado.
+- Reproduccion desde memoria usando VLC (sin archivo temporal desencriptado persistente).
+- Limpieza de buffers en memoria al liberar pista.
+- Control de reproduccion: play/pause, stop, seek, volumen, anterior/siguiente.
+- Modos de repeticion (`off`, `all`, `one`) y `shuffle`.
+- Interfaz bilingue (ES/EN).
+- Modo administrador protegido por codigo.
 
-1. Crear un entorno virtual (recomendado).
-2. Instalar dependencias:
+## 3) Arquitectura tecnica (resumen)
+
+- `app.py`
+  Punto de entrada de escritorio. Inicializa `pywebview`, crea ventana y carga el frontend local.
+
+- `secure_audio_app/api.py`
+  API puente entre frontend y backend (desbloqueo admin, seleccion de archivos, cifrado y comandos de reproductor).
+
+- `secure_audio_app/crypto.py`
+  Logica de contenedor `.audx`, cifrado/descifrado, validaciones y metadatos.
+
+- `secure_audio_app/player.py`
+  Reproductor con `python-vlc` y callbacks de lectura desde memoria.
+
+- `secure_audio_app/frontend/`
+  Interfaz local (`index.html`, `styles.css`, `app.js`).
+
+- `Reproductor.spec`
+  Configuracion oficial de PyInstaller para Windows.
+
+## 4) Requisitos
+
+## Sistema operativo
+
+- Windows (flujo de build y distribucion principal actual).
+
+## Runtime / dependencias de sistema
+
+- VLC instalado en el sistema (requerido por `python-vlc`).
+- Microsoft Visual C++ Redistributable x64 (recomendado en equipos destino).
+
+## Python (desarrollo/build)
+
+- Python 3.10+
+- Dependencias de [`requirements.txt`](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/requirements.txt)
+
+Instalacion:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Verificar que VLC nativo este instalado en el sistema.
-   `python-vlc` depende de la libreria VLC del SO (Windows/macOS/Linux).
-
-## Ejecucion
+## 5) Ejecucion en desarrollo
 
 ```bash
 python app.py
 ```
 
-## Flujo de uso
+## 6) Uso funcional paso a paso
 
-1. Abrir la aplicacion (inicia en modo usuario).
-2. Cambiar idioma con `ES/EN` si lo deseas.
-3. Pulsar `Ingresar al admin` y escribir el codigo de administrador.
-4. En modo administrador:
-   seleccionar MP3, definir clave y carpeta de salida, luego encriptar a `.audx`.
-5. Volver a modo usuario:
-   abrir archivos `.audx`, escribir clave de reproduccion y reproducir.
+## Zona de administrador
 
-## Seguridad
+1. Abrir la app.
+2. Entrar a administrador con el codigo correspondiente.
+3. Seleccionar uno o varios `.mp3`.
+4. Elegir carpeta de salida.
+5. Escribir clave (minimo 10 caracteres).
+6. Ejecutar "Preparar biblioteca" para generar `.audx`.
 
-- El MP3 original no se necesita despues de encriptar.
-- La reproduccion se hace con desencriptado en memoria.
-- No existe una funcion para exportar el audio desencriptado.
-- Se validan archivos malformados e integridad/autenticidad al descifrar.
+## Zona de usuario
 
-Limitacion importante:
-ninguna app de escritorio puede garantizar prevencion absoluta de copia cuando el audio ya se esta reproduciendo. Un atacante tecnico aun podria capturar audio por loopback del sistema, instrumentacion del proceso o tecnicas analogicas.
+1. Pulsar "Abrir biblioteca".
+2. Seleccionar uno o varios `.audx`.
+3. Ingresar clave de reproduccion.
+4. Cargar biblioteca y reproducir.
 
-Consulta detalles en [threat_model.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/threat_model.md#L1).
+## 7) Formato `.audx`
 
-## Pruebas
+El contenedor guarda:
+
+- Encabezado JSON validado (algoritmo, KDF, salt, nonce, metadatos, etc.).
+- Payload cifrado y autenticado.
+
+Referencia formal: [file_format_spec.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/file_format_spec.md)
+
+## 8) Seguridad y limites
+
+El proyecto implementa medidas para reducir exposicion de audio en claro, pero no existe proteccion absoluta en una app de escritorio.
+
+Riesgos que siempre pueden existir en escenarios avanzados:
+
+- Captura de salida de audio por loopback del sistema.
+- Instrumentacion del proceso en tiempo de ejecucion.
+- Captura analogica externa.
+
+Modelo detallado: [threat_model.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/threat_model.md)
+
+## 9) Pruebas
 
 ```bash
 python -m unittest discover -s tests
 ```
 
-## Empaquetado
+## 10) Build para Windows (oficial)
 
-Generar build en cada SO destino (no cross-build).
-
-### Windows
+Usar el script oficial:
 
 ```powershell
-pip install pyinstaller
-pyinstaller --noconfirm --windowed --name SecureAudioPlayer --add-data "secure_audio_app\\frontend;secure_audio_app\\frontend" app.py
+.\scripts\build_windows.ps1
 ```
 
-### macOS
+Este script:
 
-```bash
-pip install pyinstaller
-pyinstaller --noconfirm --windowed --name SecureAudioPlayer --add-data "secure_audio_app/frontend:secure_audio_app/frontend" app.py
-```
+1. Limpia `build/` y `dist/`.
+2. Instala/actualiza dependencias.
+3. Valida backend Qt (`PySide6`).
+4. Genera ejecutable con `Reproductor.spec`.
 
-### Linux
+Salida esperada:
 
-```bash
-pip install pyinstaller
-pyinstaller --noconfirm --windowed --name SecureAudioPlayer --add-data "secure_audio_app/frontend:secure_audio_app/frontend" app.py
-```
+- `dist\Reproductor\Reproductor.exe`
 
-## Scripts de build
+## 11) Distribucion a usuarios finales
 
-- [build_windows.ps1](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/scripts/build_windows.ps1)
-- [build_macos.sh](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/scripts/build_macos.sh)
-- [build_linux.sh](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/scripts/build_linux.sh)
+Para usuarios no tecnicos, compartir la carpeta completa generada en `dist\Reproductor` (no solo el `.exe`).
+
+Recomendado:
+
+1. Comprimir `dist\Reproductor` en `.zip`.
+2. En el equipo destino, extraer en una ruta local (por ejemplo `C:\Reproductor`).
+3. Ejecutar `Reproductor.exe` con doble clic.
+
+## 12) Troubleshooting rapido
+
+## SmartScreen al abrir `.exe`
+
+Es normal en ejecutables nuevos sin firma digital. Para reducir alertas en distribucion publica, firmar el binario.
+
+## Pantalla en blanco o no abre UI
+
+Verificar que el frontend este presente en el paquete (`secure_audio_app\frontend`) y reconstruir con el script oficial.
+
+## Error de runtime en PC destino
+
+- Ejecutar desde disco local (no red).
+- Copiar carpeta completa de `dist\Reproductor`.
+- Verificar VC++ x64 y VLC instalado.
+
+## 13) Archivos clave del repositorio
+
+- [app.py](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/app.py)
+- [Reproductor.spec](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/Reproductor.spec)
+- [scripts/build_windows.ps1](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/scripts/build_windows.ps1)
+- [secure_audio_app/api.py](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/secure_audio_app/api.py)
+- [secure_audio_app/crypto.py](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/secure_audio_app/crypto.py)
+- [secure_audio_app/player.py](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/secure_audio_app/player.py)
+- [secure_audio_app/frontend/index.html](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/secure_audio_app/frontend/index.html)
+- [architecture.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/architecture.md)
+- [file_format_spec.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/file_format_spec.md)
+- [threat_model.md](/d:/PROYECTO%20REPRODUCTOR%20CLASES%20PYTHON/threat_model.md)

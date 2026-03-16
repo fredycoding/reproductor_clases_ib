@@ -198,7 +198,44 @@ PY
 fi
 
 echo "==> Limpiando salidas previas..."
-rm -rf "$BUILD_DIR" "$DIST_DIR" "$RELEASE_DIR"
+for OUT_DIR in "$BUILD_DIR" "$DIST_DIR" "$RELEASE_DIR"; do
+  if [[ -e "$OUT_DIR" ]]; then
+    chmod -R u+w "$OUT_DIR" 2>/dev/null || true
+    chflags -R nouchg "$OUT_DIR" 2>/dev/null || true
+    rm -rf "$OUT_DIR" 2>/dev/null || true
+  fi
+
+  if [[ -e "$OUT_DIR" ]]; then
+    echo " - Reintento de limpieza para $OUT_DIR con Python..."
+    "$PY_BIN" - "$OUT_DIR" <<'PY'
+import os
+import shutil
+import stat
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+
+def onerror(func, p, exc_info):
+    try:
+        os.chmod(p, stat.S_IWUSR | stat.S_IRUSR | stat.S_IXUSR)
+    except Exception:
+        pass
+    try:
+        func(p)
+    except Exception:
+        pass
+
+if path.exists():
+    shutil.rmtree(path, ignore_errors=False, onerror=onerror)
+PY
+  fi
+
+  if [[ -e "$OUT_DIR" ]]; then
+    echo "ERROR: no se pudo limpiar $OUT_DIR. Cierra Finder/Terminales dentro de esa carpeta y reintenta."
+    exit 1
+  fi
+done
 mkdir -p "$RELEASE_DIR" "$BUILD_DIR"
 
 echo "==> Generando $APP_NAME.app (target-arch: $TARGET_ARCH)..."

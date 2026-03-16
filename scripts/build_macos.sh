@@ -95,6 +95,9 @@ echo "==> Generando $APP_NAME.app (target-arch: $TARGET_ARCH)..."
   --windowed \
   --name "$APP_NAME" \
   --target-arch "$TARGET_ARCH" \
+  --hidden-import webview \
+  --hidden-import secure_audio_app.api \
+  --hidden-import secure_audio_app.app_paths \
   --hidden-import webview.platforms.qt \
   --hidden-import qtpy \
   --hidden-import PySide6 \

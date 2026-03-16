@@ -114,6 +114,28 @@ PY
     fi
 
     if [[ "$ARGON2_OK" -eq 1 ]]; then
+      ARGON2_SO="$($PY_BIN - <<'PY'
+import sysconfig
+from pathlib import Path
+purelib = Path(sysconfig.get_paths()["purelib"])
+matches = sorted(purelib.glob("_argon2_cffi_bindings/_ffi*.so"))
+print(matches[0] if matches else "")
+PY
+)"
+      if [[ -z "$ARGON2_SO" || ! -f "$ARGON2_SO" ]]; then
+        echo " - Argon2 instalado pero sin _ffi*.so detectable; se usara fallback a scrypt."
+        ARGON2_OK=0
+      else
+        ARGON2_ARCHS="$(lipo -archs "$ARGON2_SO" 2>/dev/null || true)"
+        echo " - _argon2 _ffi: ${ARGON2_ARCHS:-desconocido}"
+        if [[ "$ARGON2_ARCHS" != *"x86_64"* || "$ARGON2_ARCHS" != *"arm64"* ]]; then
+          echo " - Argon2 no es universal2; se usara fallback a scrypt."
+          ARGON2_OK=0
+        fi
+      fi
+    fi
+
+    if [[ "$ARGON2_OK" -eq 1 ]]; then
       echo " - Argon2id disponible en este entorno universal2."
     else
       echo " - Fallback: instalando requirements sin argon2-cffi..."

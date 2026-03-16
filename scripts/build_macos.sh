@@ -100,15 +100,16 @@ if [[ ! -x "$APP_BIN_PATH" ]]; then
   exit 1
 fi
 
-FRONTEND_IN_APP_1="$DIST_DIR/$APP_NAME.app/Contents/MacOS/_internal/$FRONTEND_DST/index.html"
-FRONTEND_IN_APP_2="$DIST_DIR/$APP_NAME.app/Contents/MacOS/$FRONTEND_DST/index.html"
-if [[ ! -f "$FRONTEND_IN_APP_1" && ! -f "$FRONTEND_IN_APP_2" ]]; then
+FRONTEND_IN_APP="$(find "$DIST_DIR/$APP_NAME.app/Contents" -type f -path "*/$FRONTEND_DST/index.html" -print -quit || true)"
+if [[ -z "$FRONTEND_IN_APP" ]]; then
   echo "ERROR: No se encontro index.html dentro de la app empaquetada."
-  echo "Buscado en:"
-  echo " - $FRONTEND_IN_APP_1"
-  echo " - $FRONTEND_IN_APP_2"
+  echo "Buscado con patron: */$FRONTEND_DST/index.html"
+  echo "Contenido candidato en Contents:"
+  find "$DIST_DIR/$APP_NAME.app/Contents" -maxdepth 3 -type d | sed 's/^/ - /'
   exit 1
 fi
+
+echo "==> Frontend detectado en: $FRONTEND_IN_APP"
 
 echo "==> Arquitectura del binario:"
 lipo -info "$APP_BIN_PATH"

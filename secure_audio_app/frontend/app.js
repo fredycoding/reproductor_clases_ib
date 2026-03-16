@@ -374,7 +374,11 @@ async function bootstrap() {
     await refreshAdminStatus();
   }
   setMode("user");
-  setStatus(t("status.ready"));
+  if (response.ok && response.audio && response.audio.error) {
+    setStatus(response.audio.error, true);
+  } else {
+    setStatus(t("status.ready"));
+  }
   updateNowPlayingTexts();
   pollState();
 }

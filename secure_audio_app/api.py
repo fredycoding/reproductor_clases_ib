@@ -17,7 +17,16 @@ ADMIN_CODE_SHA256 = "c9bc710759f356523ecc7669b32e94c88b2c6e55496dc75fa23247156e7
 class AppApi:
     def __init__(self) -> None:
         self.crypto = AudxCrypto()
-        self.player = SecureVlcPlayer(self.crypto)
+        self.player: SecureVlcPlayer | None = None
+        self.player_init_error: str | None = None
+        try:
+            self.player = SecureVlcPlayer(self.crypto)
+        except Exception as exc:
+            self.player_init_error = (
+                "Motor de audio no disponible (VLC/libvlc). "
+                "Instala VLC en el sistema para habilitar reproduccion. "
+                f"Detalle: {exc}"
+            )
         self.window: webview.Window | None = None
         self.pending_encrypt_files: list[str] = []
         self.admin_unlocked = False
@@ -33,6 +42,10 @@ class AppApi:
                 "has_pin": True,
                 "unlocked": self.admin_unlocked,
             },
+            "audio": {
+                "ready": self.player is not None,
+                "error": self.player_init_error or "",
+            },
         }
 
     def admin_status(self) -> dict[str, Any]:
@@ -41,6 +54,10 @@ class AppApi:
             "admin": {
                 "has_pin": True,
                 "unlocked": self.admin_unlocked,
+            },
+            "audio": {
+                "ready": self.player is not None,
+                "error": self.player_init_error or "",
             },
         }
 
@@ -105,38 +122,40 @@ class AppApi:
 
     def load_playlist(self, files_json: str, password: str) -> dict[str, Any]:
         try:
+            player = self._require_player()
             files = json.loads(files_json)
-            entries = self.player.load_playlist(files, password)
+            entries = player.load_playlist(files, password)
             return {
                 "ok": True,
                 "playlist": [asdict(entry) for entry in entries],
-                "state": asdict(self.player.snapshot()),
+                "state": asdict(player.snapshot()),
             }
         except (json.JSONDecodeError, InvalidContainerError, AuthenticationError, SecureAudioError, OSError) as exc:
             return {"ok": False, "error": str(exc)}
 
     def playback_command(self, command: str, value: Any = None) -> dict[str, Any]:
         try:
+            player = self._require_player()
             if command == "play":
-                state = self.player.play_index(int(value))
+                state = player.play_index(int(value))
             elif command == "toggle":
-                state = self.player.toggle_play_pause()
+                state = player.toggle_play_pause()
             elif command == "pause":
-                state = self.player.pause()
+                state = player.pause()
             elif command == "stop":
-                state = self.player.stop()
+                state = player.stop()
             elif command == "next":
-                state = self.player.next_track()
+                state = player.next_track()
             elif command == "previous":
-                state = self.player.previous_track()
+                state = player.previous_track()
             elif command == "seek":
-                state = self.player.seek(float(value))
+                state = player.seek(float(value))
             elif command == "volume":
-                state = self.player.set_volume(int(value))
+                state = player.set_volume(int(value))
             elif command == "repeat":
-                state = self.player.set_repeat_mode(str(value))
+                state = player.set_repeat_mode(str(value))
             elif command == "shuffle":
-                state = self.player.set_shuffle(bool(value))
+                state = player.set_shuffle(bool(value))
             else:
                 raise SecureAudioError("Unsupported playback command.")
             return {"ok": True, "state": asdict(state)}
@@ -144,7 +163,11 @@ class AppApi:
             return {"ok": False, "error": str(exc)}
 
     def poll_state(self) -> dict[str, Any]:
-        return {"ok": True, "state": asdict(self.player.snapshot())}
+        try:
+            player = self._require_player()
+            return {"ok": True, "state": asdict(player.snapshot())}
+        except SecureAudioError as exc:
+            return {"ok": False, "error": str(exc)}
 
     def _require_window(self) -> webview.Window:
         if self.window is None:
@@ -154,3 +177,10 @@ class AppApi:
     def _require_admin_unlocked(self) -> None:
         if not self.admin_unlocked:
             raise SecureAudioError("Debes desbloquear la zona de administrador con el codigo.")
+
+    def _require_player(self) -> SecureVlcPlayer:
+        if self.player is None:
+            if self.player_init_error:
+                raise SecureAudioError(self.player_init_error)
+            raise SecureAudioError("Motor de audio no disponible.")
+        return self.player

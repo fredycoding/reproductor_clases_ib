@@ -47,6 +47,11 @@ if ! command -v hdiutil >/dev/null 2>&1; then
   exit 1
 fi
 
+if [[ ! -d "/Applications/VLC.app" ]]; then
+  echo "AVISO: VLC.app no se detecto en /Applications."
+  echo "       Este build NO incluye libvlc dentro del .app; en la Mac destino se requiere VLC instalado."
+fi
+
 case "$ARCH_MODE" in
   auto)
     if [[ "$(uname -m)" == "arm64" ]]; then

@@ -239,24 +239,31 @@ done
 mkdir -p "$RELEASE_DIR" "$BUILD_DIR"
 
 echo "==> Generando $APP_NAME.app (target-arch: $TARGET_ARCH)..."
-"$PY_BIN" -m PyInstaller \
-  --noconfirm \
-  --clean \
-  --windowed \
-  --name "$APP_NAME" \
-  --target-arch "$TARGET_ARCH" \
-  --hidden-import webview \
-  --hidden-import secure_audio_app.api \
-  --hidden-import secure_audio_app.app_paths \
-  --hidden-import webview.platforms.qt \
-  --collect-submodules webview \
-  --hidden-import qtpy \
-  --hidden-import PySide6 \
-  --hidden-import PySide6.QtWebEngineCore \
-  --hidden-import PySide6.QtWebEngineWidgets \
-  --add-data "$FRONTEND_SRC:$FRONTEND_DST" \
-  "${PYI_EXTRA_ARGS[@]}" \
-  "$ENTRYPOINT"
+PYI_CMD=(
+  "$PY_BIN" -m PyInstaller
+  --noconfirm
+  --clean
+  --windowed
+  --name "$APP_NAME"
+  --target-arch "$TARGET_ARCH"
+  --hidden-import webview
+  --hidden-import secure_audio_app.api
+  --hidden-import secure_audio_app.app_paths
+  --hidden-import webview.platforms.qt
+  --collect-submodules webview
+  --hidden-import qtpy
+  --hidden-import PySide6
+  --hidden-import PySide6.QtWebEngineCore
+  --hidden-import PySide6.QtWebEngineWidgets
+  --add-data "$FRONTEND_SRC:$FRONTEND_DST"
+)
+if declare -p PYI_EXTRA_ARGS >/dev/null 2>&1; then
+  if (( ${#PYI_EXTRA_ARGS[@]} > 0 )); then
+    PYI_CMD+=("${PYI_EXTRA_ARGS[@]}")
+  fi
+fi
+PYI_CMD+=("$ENTRYPOINT")
+"${PYI_CMD[@]}"
 
 if [[ ! -x "$APP_BIN_PATH" ]]; then
   echo "ERROR: No se encontro el binario esperado en $APP_BIN_PATH."

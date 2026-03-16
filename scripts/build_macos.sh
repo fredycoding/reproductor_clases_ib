@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+
+on_error() {
+  local exit_code=$?
+  local line_no=$1
+  echo "ERROR: fallo en linea ${line_no}. Comando: ${BASH_COMMAND} (codigo ${exit_code})"
+  exit $exit_code
+}
+trap 'on_error $LINENO' ERR
 # Comentario de prueba para validar cambios en Git.
 
 APP_NAME="Reproductor"
@@ -150,3 +158,4 @@ echo "DMG: $DMG_PATH"
 echo "==> Tamano final del DMG:"
 du -sh "$DMG_PATH"
 echo "==> Recomendacion: copia la app a /Applications antes de abrirla."
+

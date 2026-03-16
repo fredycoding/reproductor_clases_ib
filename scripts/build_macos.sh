@@ -37,7 +37,11 @@ if [[ -z "${VIRTUAL_ENV:-}" ]]; then
   echo "AVISO: No parece que un venv este activo. Se recomienda usar uno para evitar conflictos."
 fi
 
-if ! command -v python >/dev/null 2>&1; then
+if command -v python3 >/dev/null 2>&1; then
+  PY_BIN="python3"
+elif command -v python >/dev/null 2>&1; then
+  PY_BIN="python"
+else
   echo "ERROR: Python no esta disponible en PATH."
   exit 1
 fi
@@ -70,19 +74,24 @@ case "$ARCH_MODE" in
 esac
 
 echo "==> Instalando/actualizando herramientas de build..."
-python -m pip install --upgrade pip pyinstaller
+"$PY_BIN" -m pip install --upgrade pip pyinstaller
 
 echo "==> Limpiando salidas previas..."
 rm -rf "$BUILD_DIR" "$DIST_DIR" "$RELEASE_DIR"
-mkdir -p "$RELEASE_DIR"
+mkdir -p "$RELEASE_DIR" "$BUILD_DIR"
 
 echo "==> Generando $APP_NAME.app (target-arch: $TARGET_ARCH)..."
-python -m PyInstaller \
+"$PY_BIN" -m PyInstaller \
   --noconfirm \
   --clean \
   --windowed \
   --name "$APP_NAME" \
   --target-arch "$TARGET_ARCH" \
+  --hidden-import webview.platforms.qt \
+  --hidden-import qtpy \
+  --hidden-import PySide6 \
+  --hidden-import PySide6.QtWebEngineCore \
+  --hidden-import PySide6.QtWebEngineWidgets \
   --add-data "$FRONTEND_SRC:$FRONTEND_DST" \
   "$ENTRYPOINT"
 
@@ -91,19 +100,52 @@ if [[ ! -x "$APP_BIN_PATH" ]]; then
   exit 1
 fi
 
+FRONTEND_IN_APP_1="$DIST_DIR/$APP_NAME.app/Contents/MacOS/_internal/$FRONTEND_DST/index.html"
+FRONTEND_IN_APP_2="$DIST_DIR/$APP_NAME.app/Contents/MacOS/$FRONTEND_DST/index.html"
+if [[ ! -f "$FRONTEND_IN_APP_1" && ! -f "$FRONTEND_IN_APP_2" ]]; then
+  echo "ERROR: No se encontro index.html dentro de la app empaquetada."
+  echo "Buscado en:"
+  echo " - $FRONTEND_IN_APP_1"
+  echo " - $FRONTEND_IN_APP_2"
+  exit 1
+fi
+
 echo "==> Arquitectura del binario:"
 lipo -info "$APP_BIN_PATH"
+echo "==> Tamano de la app empaquetada:"
+du -sh "$DIST_DIR/$APP_NAME.app"
 
-DMG_PATH="$RELEASE_DIR/${APP_NAME}-${TARGET_ARCH}.dmg"
-echo "==> Creando DMG en $DMG_PATH..."
+DMG_BASE="$RELEASE_DIR/${APP_NAME}-${TARGET_ARCH}"
+DMG_PATH="${DMG_BASE}.dmg"
+DMG_TMP="$BUILD_DIR/${APP_NAME}-${TARGET_ARCH}.tmp.dmg"
+DMG_STAGE="$BUILD_DIR/dmg-root"
+
+echo "==> Preparando contenido del DMG..."
+rm -rf "$DMG_STAGE"
+mkdir -p "$DMG_STAGE"
+cp -R "$DIST_DIR/$APP_NAME.app" "$DMG_STAGE/"
+ln -s /Applications "$DMG_STAGE/Applications"
+
+echo "==> Creando imagen temporal..."
 hdiutil create \
   -volname "$APP_NAME" \
-  -srcfolder "$DIST_DIR/$APP_NAME.app" \
+  -srcfolder "$DMG_STAGE" \
   -ov \
-  -format UDZO \
-  "$DMG_PATH"
+  -fs HFS+ \
+  -format UDRW \
+  "$DMG_TMP"
+
+echo "==> Comprimiendo DMG final..."
+hdiutil convert "$DMG_TMP" -format UDZO -o "$DMG_BASE"
+rm -f "$DMG_TMP"
+
+echo "==> Verificando DMG..."
+hdiutil verify "$DMG_PATH"
 
 echo
 echo "Build completado."
 echo "App: $DIST_DIR/$APP_NAME.app"
 echo "DMG: $DMG_PATH"
+echo "==> Tamano final del DMG:"
+du -sh "$DMG_PATH"
+echo "==> Recomendacion: copia la app a /Applications antes de abrirla."

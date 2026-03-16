@@ -85,8 +85,26 @@ echo "==> Instalando/actualizando herramientas de build..."
 "$PY_BIN" -m pip install --upgrade pip pyinstaller
 
 if [[ -f "requirements.txt" ]]; then
-  echo "==> Instalando dependencias runtime desde requirements.txt..."
-  "$PY_BIN" -m pip install -r requirements.txt
+  if [[ "$TARGET_ARCH" == "universal2" ]]; then
+    echo "==> Modo universal2 en Intel: instalando dependencias compatibles..."
+    export ARCHFLAGS="-arch x86_64 -arch arm64"
+    export _PYTHON_HOST_PLATFORM="macosx-13.0-universal2"
+    export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-13.0}"
+
+    echo " - Reinstalando cffi como universal2 (source build)..."
+    "$PY_BIN" -m pip install --force-reinstall --no-binary cffi cffi
+
+    echo " - Instalando requirements sin argon2-cffi (incompatible universal2 en este entorno)..."
+    TMP_REQ="$(mktemp)"
+    grep -Ev '^[[:space:]]*argon2-cffi([[:space:]]|[<>=!~]|$)' requirements.txt > "$TMP_REQ"
+    "$PY_BIN" -m pip install -r "$TMP_REQ"
+    rm -f "$TMP_REQ"
+
+    echo "AVISO: Este build universal2 queda sin Argon2id; usara scrypt."
+  else
+    echo "==> Instalando dependencias runtime desde requirements.txt..."
+    "$PY_BIN" -m pip install -r requirements.txt
+  fi
 fi
 
 echo "==> Validando imports criticos antes de empaquetar..."
@@ -116,6 +134,36 @@ if missing:
 
 print("OK: imports criticos disponibles")
 PY
+
+
+if [[ "$TARGET_ARCH" == "universal2" ]]; then
+  echo "==> Validando extensiones nativas para universal2..."
+  CFFI_SO="$("$PY_BIN" - <<'PY'
+import sysconfig
+from pathlib import Path
+purelib = Path(sysconfig.get_paths()["purelib"])
+matches = sorted(purelib.glob("_cffi_backend*.so"))
+print(matches[0] if matches else "")
+PY
+)"
+
+  if [[ -z "$CFFI_SO" || ! -f "$CFFI_SO" ]]; then
+    echo "ERROR: no se encontro _cffi_backend*.so en el entorno virtual."
+    exit 1
+  fi
+
+  CFFI_ARCHS="$(lipo -archs "$CFFI_SO" 2>/dev/null || true)"
+  echo " - _cffi_backend: ${CFFI_ARCHS:-desconocido}"
+  if [[ "$CFFI_ARCHS" != *"x86_64"* || "$CFFI_ARCHS" != *"arm64"* ]]; then
+    echo "ERROR: _cffi_backend no es universal2 (falta x86_64 o arm64)."
+    echo "Solucion recomendada:"
+    echo "  1) Crear venv con Python.org universal2 (3.12 recomendado)."
+    echo "  2) Reinstalar requirements y pyinstaller en ese venv."
+    echo "  3) Reintentar build universal2."
+    echo "Alternativa inmediata: compilar x86_64 con: bash scripts/build_macos.sh x86_64"
+    exit 1
+  fi
+fi
 
 echo "==> Limpiando salidas previas..."
 rm -rf "$BUILD_DIR" "$DIST_DIR" "$RELEASE_DIR"

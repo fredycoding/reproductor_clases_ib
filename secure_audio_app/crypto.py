@@ -207,7 +207,12 @@ class AudxCrypto:
             raise SecureAudioError("La clave debe tener al menos 10 caracteres.")
         kdf_name = header.get("kdf") if header else self.kdf_name
         kdf_params = header.get("kdf_params", {}) if header else {}
-        if kdf_name == "Argon2id" and hash_secret_raw is not None and Type is not None:
+        if kdf_name == "Argon2id":
+            if hash_secret_raw is None or Type is None:
+                raise SecureAudioError(
+                    "Este build no incluye Argon2id (argon2-cffi). "
+                    "Usa una app con Argon2 o archivos AUDX con kdf scrypt."
+                )
             return hash_secret_raw(
                 secret=password.encode("utf-8"),
                 salt=salt,

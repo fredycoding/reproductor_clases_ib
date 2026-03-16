@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -Eeuo pipefail
 
 on_error() {
@@ -95,22 +95,44 @@ if [[ -f "requirements.txt" ]]; then
     echo " - Reinstalando cffi como universal2 (source build)..."
     "$PY_BIN" -m pip install --force-reinstall --no-binary cffi cffi
 
-    echo " - Instalando requirements sin argon2-cffi (incompatible universal2 en este entorno)..."
-    TMP_REQ="$(mktemp)"
-    grep -Ev '^[[:space:]]*argon2-cffi([[:space:]]|[<>=!~]|$)' requirements.txt > "$TMP_REQ"
-    "$PY_BIN" -m pip install -r "$TMP_REQ"
-    rm -f "$TMP_REQ"
+    echo " - Intentando instalar requirements completos (incluyendo argon2-cffi)..."
+    ARGON2_OK=0
+    if "$PY_BIN" -m pip install -r requirements.txt; then
+      if "$PY_BIN" - <<'PY'
+import importlib
+import sys
+try:
+    importlib.import_module("argon2.low_level")
+except Exception as exc:
+    print(f"ARGON2_IMPORT_ERROR: {exc}", file=sys.stderr)
+    raise SystemExit(1)
+print("ARGON2_OK")
+PY
+      then
+        ARGON2_OK=1
+      fi
+    fi
 
-    echo " - Eliminando Argon2 residual del venv para evitar binarios no-universales..."
-    "$PY_BIN" -m pip uninstall -y argon2-cffi argon2-cffi-bindings || true
+    if [[ "$ARGON2_OK" -eq 1 ]]; then
+      echo " - Argon2id disponible en este entorno universal2."
+    else
+      echo " - Fallback: instalando requirements sin argon2-cffi..."
+      TMP_REQ="$(mktemp)"
+      grep -Ev '^[[:space:]]*argon2-cffi([[:space:]]|[<>=!~]|$)' requirements.txt > "$TMP_REQ"
+      "$PY_BIN" -m pip install -r "$TMP_REQ"
+      rm -f "$TMP_REQ"
 
-    PYI_EXTRA_ARGS+=(
-      --exclude-module argon2
-      --exclude-module argon2.low_level
-      --exclude-module _argon2_cffi_bindings
-    )
+      echo " - Eliminando Argon2 residual del venv para evitar binarios no-universales..."
+      "$PY_BIN" -m pip uninstall -y argon2-cffi argon2-cffi-bindings || true
 
-    echo "AVISO: Este build universal2 queda sin Argon2id; usara scrypt."
+      PYI_EXTRA_ARGS+=(
+        --exclude-module argon2
+        --exclude-module argon2.low_level
+        --exclude-module _argon2_cffi_bindings
+      )
+
+      echo "AVISO: Este build universal2 queda sin Argon2id; usara scrypt."
+    fi
   else
     echo "==> Instalando dependencias runtime desde requirements.txt..."
     "$PY_BIN" -m pip install -r requirements.txt

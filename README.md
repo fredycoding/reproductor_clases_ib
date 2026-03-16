@@ -1,5 +1,7 @@
 # Reproductor Seguro de Audio (Secure Audio Player)
 
+> Comentario de prueba: este cambio se agrego para validar Git.
+
 Aplicacion de escritorio en Python para preparar y reproducir una biblioteca de audio protegida.
 
 - Manual para usuarios finales: [MANUAL_USUARIO.md](MANUAL_USUARIO.md)

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# Comentario de prueba para validar cambios en Git.
 
 APP_NAME="Reproductor"
 ENTRYPOINT="app.py"

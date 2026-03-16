@@ -1,8 +1,9 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import ctypes
 import random
 import threading
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -24,9 +25,10 @@ MEDIA_READ_CB = ctypes.CFUNCTYPE(
 )
 MEDIA_SEEK_CB = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_void_p, ctypes.c_uint64)
 MEDIA_CLOSE_CB = ctypes.CFUNCTYPE(None, ctypes.c_void_p)
+DATACLASS_KWARGS = {"slots": True} if sys.version_info >= (3, 10) else {}
 
 
-@dataclass(slots=True)
+@dataclass(**DATACLASS_KWARGS)
 class PlaylistEntry:
     path: str
     title: str
@@ -34,7 +36,7 @@ class PlaylistEntry:
     duration: float
 
 
-@dataclass(slots=True)
+@dataclass(**DATACLASS_KWARGS)
 class PlayerState:
     playlist: list[PlaylistEntry] = field(default_factory=list)
     current_index: int = -1
@@ -308,3 +310,4 @@ def _opaque_to_int(value) -> int:
     if hasattr(value, "value"):
         return int(value.value)
     return int(value)
+

@@ -1,10 +1,11 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import base64
 import hashlib
 import json
 import os
 import struct
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -25,6 +26,7 @@ HEADER_LEN_STRUCT = struct.Struct(">I")
 MAX_HEADER_LEN = 16 * 1024
 NONCE_SIZE = 12
 SALT_SIZE = 16
+DATACLASS_KWARGS = {"slots": True} if sys.version_info >= (3, 10) else {}
 
 
 class SecureAudioError(Exception):
@@ -39,7 +41,7 @@ class AuthenticationError(SecureAudioError):
     pass
 
 
-@dataclass(slots=True)
+@dataclass(**DATACLASS_KWARGS)
 class DecryptedAudio:
     metadata: dict[str, Any]
     audio_bytes: bytearray
@@ -272,3 +274,4 @@ def _read_tag(tags: Any, names: tuple[str, ...], default: str) -> str:
             return str(text[0])
         return str(value)
     return default
+

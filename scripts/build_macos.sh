@@ -84,6 +84,39 @@ esac
 echo "==> Instalando/actualizando herramientas de build..."
 "$PY_BIN" -m pip install --upgrade pip pyinstaller
 
+if [[ -f "requirements.txt" ]]; then
+  echo "==> Instalando dependencias runtime desde requirements.txt..."
+  "$PY_BIN" -m pip install -r requirements.txt
+fi
+
+echo "==> Validando imports criticos antes de empaquetar..."
+"$PY_BIN" - <<'PY'
+import importlib
+import sys
+
+required = [
+    "webview",
+    "qtpy",
+    "PySide6",
+    "secure_audio_app.api",
+    "secure_audio_app.app_paths",
+]
+missing = []
+for name in required:
+    try:
+        importlib.import_module(name)
+    except Exception as exc:
+        missing.append((name, exc))
+
+if missing:
+    print("ERROR: faltan modulos requeridos para build:", file=sys.stderr)
+    for name, exc in missing:
+        print(f" - {name}: {exc}", file=sys.stderr)
+    raise SystemExit(1)
+
+print("OK: imports criticos disponibles")
+PY
+
 echo "==> Limpiando salidas previas..."
 rm -rf "$BUILD_DIR" "$DIST_DIR" "$RELEASE_DIR"
 mkdir -p "$RELEASE_DIR" "$BUILD_DIR"
@@ -99,6 +132,7 @@ echo "==> Generando $APP_NAME.app (target-arch: $TARGET_ARCH)..."
   --hidden-import secure_audio_app.api \
   --hidden-import secure_audio_app.app_paths \
   --hidden-import webview.platforms.qt \
+  --collect-submodules webview \
   --hidden-import qtpy \
   --hidden-import PySide6 \
   --hidden-import PySide6.QtWebEngineCore \

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -Eeuo pipefail
 
 on_error() {
@@ -18,6 +18,7 @@ DIST_DIR="dist"
 BUILD_DIR="build"
 RELEASE_DIR="release"
 APP_BIN_PATH="$DIST_DIR/$APP_NAME.app/Contents/MacOS/$APP_NAME"
+PYI_EXTRA_ARGS=()
 
 # Arch mode:
 # - auto (default): arm64 on Apple Silicon, x86_64 on Intel
@@ -99,6 +100,15 @@ if [[ -f "requirements.txt" ]]; then
     grep -Ev '^[[:space:]]*argon2-cffi([[:space:]]|[<>=!~]|$)' requirements.txt > "$TMP_REQ"
     "$PY_BIN" -m pip install -r "$TMP_REQ"
     rm -f "$TMP_REQ"
+
+    echo " - Eliminando Argon2 residual del venv para evitar binarios no-universales..."
+    "$PY_BIN" -m pip uninstall -y argon2-cffi argon2-cffi-bindings || true
+
+    PYI_EXTRA_ARGS+=(
+      --exclude-module argon2
+      --exclude-module argon2.low_level
+      --exclude-module _argon2_cffi_bindings
+    )
 
     echo "AVISO: Este build universal2 queda sin Argon2id; usara scrypt."
   else
@@ -186,6 +196,7 @@ echo "==> Generando $APP_NAME.app (target-arch: $TARGET_ARCH)..."
   --hidden-import PySide6.QtWebEngineCore \
   --hidden-import PySide6.QtWebEngineWidgets \
   --add-data "$FRONTEND_SRC:$FRONTEND_DST" \
+  "${PYI_EXTRA_ARGS[@]}" \
   "$ENTRYPOINT"
 
 if [[ ! -x "$APP_BIN_PATH" ]]; then
@@ -243,4 +254,7 @@ echo "DMG: $DMG_PATH"
 echo "==> Tamano final del DMG:"
 du -sh "$DMG_PATH"
 echo "==> Recomendacion: copia la app a /Applications antes de abrirla."
+
+
+
 

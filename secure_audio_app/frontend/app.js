@@ -177,6 +177,7 @@ const els = {
   totalTime: document.getElementById("total-time"),
   volumeSlider: document.getElementById("volume-slider"),
   statusText: document.getElementById("status-text"),
+  statusLoader: document.getElementById("status-loader"),
   nowPlayingTitle: document.getElementById("now-playing-title"),
   nowPlayingSubtitle: document.getElementById("now-playing-subtitle"),
 };
@@ -229,9 +230,12 @@ async function callApi(method, ...args) {
   return window.pywebview.api[method](...args);
 }
 
-function setStatus(message, isError = false) {
+function setStatus(message, isError = false, showLoading = false) {
   els.statusText.textContent = message;
   els.statusText.style.color = isError ? "#ff9b9b" : "";
+  if (els.statusLoader) {
+    els.statusLoader.classList.toggle("hidden", !showLoading);
+  }
 }
 
 function updateModeTexts() {
@@ -445,7 +449,7 @@ async function loadSelectedLibrary() {
     return;
   }
   state.playbackPassword = password;
-  setStatus(t("status.loading_audio"));
+  setStatus(t("status.loading_audio"), false, true);
   els.loadLibraryBtn.disabled = true;
   els.openAudxBtn.disabled = true;
   try {

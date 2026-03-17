@@ -453,7 +453,14 @@ async function loadSelectedLibrary() {
   els.loadLibraryBtn.disabled = true;
   els.openAudxBtn.disabled = true;
   try {
-    const response = await callApi("load_playlist", JSON.stringify(state.pendingLibraryFiles), password);
+    let response;
+    try {
+      response = await callApi("load_playlist", JSON.stringify(state.pendingLibraryFiles), password);
+    } catch (error) {
+      const detail = error && error.message ? error.message : String(error || "Error desconocido");
+      setStatus(`No se pudo cargar el audio: ${detail}`, true);
+      return;
+    }
     if (!response.ok) {
       setStatus(response.error, true);
       return;

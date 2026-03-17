@@ -136,6 +136,8 @@ class AppApi:
             }
         except (json.JSONDecodeError, InvalidContainerError, AuthenticationError, SecureAudioError, OSError) as exc:
             return {"ok": False, "error": str(exc)}
+        except Exception as exc:
+            return {"ok": False, "error": f"Error interno al cargar audio: {exc}"}
 
     def playback_command(self, command: str, value: Any = None) -> dict[str, Any]:
         try:

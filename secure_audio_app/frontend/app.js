@@ -10,9 +10,9 @@ const TRANSLATIONS = {
     "mode.lock_admin": "Bloquear admin",
     "summary.title": "Resumen",
     "mode.desc_locked": "Solo el modo usuario esta disponible hasta desbloquear admin.",
-    "summary.user_locked": "Usa la zona de usuario para reproducir tu biblioteca de audio.",
+    "summary.user_locked": "Usa la zona de usuario para reproducir un audio.",
     "summary.admin": "Esta zona esta pensada para preparar la biblioteca segura antes de distribuirla.",
-    "summary.user": "Esta zona esta pensada para cargar y reproducir la biblioteca.",
+    "summary.user": "Esta zona esta pensada para cargar y reproducir un audio.",
     "admin.auth_title": "Ingresar codigo de administrador",
     "admin.code_label": "Codigo admin",
     "admin.unlock": "Desbloquear",
@@ -28,10 +28,10 @@ const TRANSLATIONS = {
     "admin.browse": "Examinar",
     "admin.encrypt_button": "Preparar biblioteca",
     "user.zone": "Zona de usuario",
-    "user.playlist_title": "Biblioteca de audio",
-    "user.open_audx": "Abrir biblioteca",
+    "user.playlist_title": "Audio seleccionado",
+    "user.open_audx": "Abrir audio AUDX",
     "user.playback_passphrase": "Clave de reproduccion",
-    "user.load_library": "Cargar biblioteca",
+    "user.load_library": "Cargar audio",
     "controls.prev": "Anterior",
     "controls.play_pause": "Play/Pausa",
     "controls.stop": "Detener",
@@ -50,14 +50,15 @@ const TRANSLATIONS = {
     "status.admin_selected_mp3": "{count} archivo(s) MP3 seleccionado(s).",
     "status.admin_encrypted": "{count} archivo(s) procesado(s) en la biblioteca.",
     "status.need_playback_pass": "Ingresa primero la clave de reproduccion.",
-    "status.library_files_selected": "{count} archivo(s) seleccionado(s). Ingresa la clave para cargar.",
-    "status.library_not_selected": "Primero debes seleccionar archivos de biblioteca.",
-    "status.playlist_loaded": "{count} pista(s) cargada(s).",
+    "status.library_files_selected": "Archivo seleccionado. Ingresa la clave para cargar.",
+    "status.library_not_selected": "Primero debes seleccionar un archivo AUDX.",
+    "status.playlist_loaded": "Audio cargado.",
+    "status.loading_audio": "Cargando audio...",
     "status.mode_admin_desc": "Gestiona los MP3 y genera archivos protegidos.",
     "status.mode_user_desc": "Reproduce tus pistas como usuario final.",
     "status.mode_need_code": "Ingresa el codigo para habilitar el modo administrador.",
     "player.no_track": "Sin pista seleccionada",
-    "player.subtitle_idle": "Carga tu biblioteca para iniciar reproduccion.",
+    "player.subtitle_idle": "Carga un audio para iniciar reproduccion.",
     "player.subtitle_playing": "Reproduccion activa.",
     "player.subtitle_paused": "Reproduccion en pausa.",
   },
@@ -72,9 +73,9 @@ const TRANSLATIONS = {
     "mode.lock_admin": "Lock admin",
     "summary.title": "Summary",
     "mode.desc_locked": "Only user mode is available until admin is unlocked.",
-    "summary.user_locked": "Use user mode to play your audio library.",
+    "summary.user_locked": "Use user mode to play one audio file.",
     "summary.admin": "This area is for preparing the library before distribution.",
-    "summary.user": "This area is for loading and playing your library.",
+    "summary.user": "This area is for loading and playing one audio file.",
     "admin.auth_title": "Enter administrator code",
     "admin.code_label": "Admin code",
     "admin.unlock": "Unlock",
@@ -90,10 +91,10 @@ const TRANSLATIONS = {
     "admin.browse": "Browse",
     "admin.encrypt_button": "Prepare library",
     "user.zone": "User zone",
-    "user.playlist_title": "Audio library",
-    "user.open_audx": "Open library",
+    "user.playlist_title": "Selected audio",
+    "user.open_audx": "Open AUDX audio",
     "user.playback_passphrase": "Playback passphrase",
-    "user.load_library": "Load library",
+    "user.load_library": "Load audio",
     "controls.prev": "Previous",
     "controls.play_pause": "Play/Pause",
     "controls.stop": "Stop",
@@ -112,14 +113,15 @@ const TRANSLATIONS = {
     "status.admin_selected_mp3": "{count} MP3 file(s) selected.",
     "status.admin_encrypted": "{count} file(s) processed into the library.",
     "status.need_playback_pass": "Enter playback passphrase first.",
-    "status.library_files_selected": "{count} file(s) selected. Enter passphrase to load.",
-    "status.library_not_selected": "You must select library files first.",
-    "status.playlist_loaded": "{count} track(s) loaded.",
+    "status.library_files_selected": "Audio file selected. Enter passphrase to load.",
+    "status.library_not_selected": "You must select one AUDX file first.",
+    "status.playlist_loaded": "Audio loaded.",
+    "status.loading_audio": "Loading audio...",
     "status.mode_admin_desc": "Manage MP3 files and generate protected files.",
     "status.mode_user_desc": "Play tracks as end user.",
     "status.mode_need_code": "Enter the code to enable administrator mode.",
     "player.no_track": "No track selected",
-    "player.subtitle_idle": "Load your library to start playback.",
+    "player.subtitle_idle": "Load one audio file to start playback.",
     "player.subtitle_playing": "Playback is active.",
     "player.subtitle_paused": "Playback is paused.",
   },
@@ -209,6 +211,9 @@ function applyTranslations() {
   els.langEsBtn.classList.toggle("primary", state.language === "es");
   els.langEnBtn.classList.toggle("primary", state.language === "en");
   updateModeTexts();
+  const hasMultiple = (state.playlist?.length || 0) > 1;
+  els.prevBtn.disabled = !hasMultiple;
+  els.nextBtn.disabled = !hasMultiple;
   updateNowPlayingTexts();
 }
 
@@ -355,6 +360,9 @@ function applyPlayerState(nextState) {
   }
   els.elapsedTime.textContent = formatTime(nextState.position_seconds || 0);
   els.totalTime.textContent = formatTime(nextState.duration_seconds || 0);
+  const hasMultiple = (state.playlist?.length || 0) > 1;
+  els.prevBtn.disabled = !hasMultiple;
+  els.nextBtn.disabled = !hasMultiple;
   updateNowPlayingTexts();
 }
 
@@ -379,6 +387,9 @@ async function bootstrap() {
   } else {
     setStatus(t("status.ready"));
   }
+  const hasMultiple = (state.playlist?.length || 0) > 1;
+  els.prevBtn.disabled = !hasMultiple;
+  els.nextBtn.disabled = !hasMultiple;
   updateNowPlayingTexts();
   pollState();
 }
@@ -417,10 +428,10 @@ async function encryptSelectedFiles() {
 async function openAudxFiles() {
   const picked = await callApi("browse_encrypted_files");
   if (!picked.files || !picked.files.length) return;
-  state.pendingLibraryFiles = picked.files;
+  state.pendingLibraryFiles = [picked.files[0]];
   els.playbackAuthPanel.classList.remove("hidden");
   els.playbackPassword.focus();
-  setStatus(t("status.library_files_selected", { count: state.pendingLibraryFiles.length }));
+  setStatus(t("status.library_files_selected"));
 }
 
 async function loadSelectedLibrary() {
@@ -434,14 +445,22 @@ async function loadSelectedLibrary() {
     return;
   }
   state.playbackPassword = password;
-  const response = await callApi("load_playlist", JSON.stringify(state.pendingLibraryFiles), password);
-  if (!response.ok) {
-    setStatus(response.error, true);
-    return;
+  setStatus(t("status.loading_audio"));
+  els.loadLibraryBtn.disabled = true;
+  els.openAudxBtn.disabled = true;
+  try {
+    const response = await callApi("load_playlist", JSON.stringify(state.pendingLibraryFiles), password);
+    if (!response.ok) {
+      setStatus(response.error, true);
+      return;
+    }
+    state.playlist = response.playlist || [];
+    applyPlayerState(response.state);
+    setStatus(t("status.playlist_loaded"));
+  } finally {
+    els.loadLibraryBtn.disabled = false;
+    els.openAudxBtn.disabled = false;
   }
-  state.playlist = response.playlist || [];
-  applyPlayerState(response.state);
-  setStatus(t("status.playlist_loaded", { count: state.playlist.length }));
 }
 
 async function playIndex(index) {

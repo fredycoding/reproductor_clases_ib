@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import ctypes
 import random
@@ -93,6 +93,8 @@ class SecureVlcPlayer:
         self._lock = threading.RLock()
         self._current_stream: MemoryAudioStream | None = None
         self._current_audio: DecryptedAudio | None = None
+        self._prefetched_audio: DecryptedAudio | None = None
+        self._prefetched_path: str | None = None
         self._stream_registry: dict[int, MemoryAudioStream] = {}
         self._vlc_callbacks = self._create_vlc_callbacks()
         self._bind_events()
@@ -111,8 +113,17 @@ class SecureVlcPlayer:
                 )
             )
 
+        prefetched_audio: DecryptedAudio | None = None
+        if entries:
+            # Validate passphrase during load and reuse decrypted bytes on first play.
+            prefetched_audio = self.crypto.decrypt_file(entries[0].path, password)
+
         with self._lock:
             self.stop()
+            self._clear_prefetched_audio()
+            if prefetched_audio is not None:
+                self._prefetched_audio = prefetched_audio
+                self._prefetched_path = entries[0].path
             self.state.playlist = entries
             self.state.current_index = -1
             self.password = password
@@ -236,7 +247,13 @@ class SecureVlcPlayer:
     def _load_current(self, index: int) -> None:
         self._release_current_media()
         entry = self.state.playlist[index]
-        audio = self.crypto.decrypt_file(entry.path, self.password)
+        if self._prefetched_audio is not None and self._prefetched_path == entry.path:
+            audio = self._prefetched_audio
+            self._prefetched_audio = None
+            self._prefetched_path = None
+        else:
+            self._clear_prefetched_audio()
+            audio = self.crypto.decrypt_file(entry.path, self.password)
         stream = MemoryAudioStream(audio.audio_bytes)
         stream_id = id(stream)
         self._stream_registry[stream_id] = stream
@@ -264,6 +281,12 @@ class SecureVlcPlayer:
         if self._current_audio is not None:
             self._current_audio.wipe()
             self._current_audio = None
+
+    def _clear_prefetched_audio(self) -> None:
+        if self._prefetched_audio is not None:
+            self._prefetched_audio.wipe()
+            self._prefetched_audio = None
+        self._prefetched_path = None
 
     def _create_vlc_callbacks(self) -> dict[str, object]:
         def open_cb(opaque, data_pointer, size_pointer) -> int:

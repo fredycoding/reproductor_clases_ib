@@ -17,12 +17,12 @@ ADMIN_CODE_SHA256 = "c9bc710759f356523ecc7669b32e94c88b2c6e55496dc75fa23247156e7
 class AppApi:
     def __init__(self) -> None:
         self.crypto = AudxCrypto()
-        self.player: SecureVlcPlayer | None = None
-        self.player_init_error: str | None = None
+        self._player: SecureVlcPlayer | None = None
+        self._player_init_error: str | None = None
         try:
-            self.player = SecureVlcPlayer(self.crypto)
+            self._player = SecureVlcPlayer(self.crypto)
         except Exception as exc:
-            self.player_init_error = (
+            self._player_init_error = (
                 "Motor de audio no disponible (VLC/libvlc). "
                 "Instala VLC en el sistema para habilitar reproduccion. "
                 f"Detalle: {exc}"
@@ -43,8 +43,8 @@ class AppApi:
                 "unlocked": self.admin_unlocked,
             },
             "audio": {
-                "ready": self.player is not None,
-                "error": self.player_init_error or "",
+                "ready": self._player is not None,
+                "error": self._player_init_error or "",
             },
         }
 
@@ -56,8 +56,8 @@ class AppApi:
                 "unlocked": self.admin_unlocked,
             },
             "audio": {
-                "ready": self.player is not None,
-                "error": self.player_init_error or "",
+                "ready": self._player is not None,
+                "error": self._player_init_error or "",
             },
         }
 
@@ -80,7 +80,7 @@ class AppApi:
         try:
             self._require_admin_unlocked()
             selected = self._require_window().create_file_dialog(
-                webview.OPEN_DIALOG,
+                webview.FileDialog.OPEN,
                 allow_multiple=True,
                 file_types=("MP3 files (*.mp3)",),
             )
@@ -92,7 +92,7 @@ class AppApi:
     def choose_output_dir(self) -> dict[str, Any]:
         try:
             self._require_admin_unlocked()
-            selected = self._require_window().create_file_dialog(webview.FOLDER_DIALOG)
+            selected = self._require_window().create_file_dialog(webview.FileDialog.FOLDER)
             return {"ok": True, "directory": selected[0] if selected else ""}
         except (SecureAudioError, RuntimeError) as exc:
             return {"ok": False, "error": str(exc)}
@@ -114,8 +114,8 @@ class AppApi:
 
     def browse_encrypted_files(self) -> dict[str, Any]:
         selected = self._require_window().create_file_dialog(
-            webview.OPEN_DIALOG,
-            allow_multiple=True,
+            webview.FileDialog.OPEN,
+            allow_multiple=False,
             file_types=("AUDX files (*.audx)",),
         )
         return {"ok": True, "files": list(selected or [])}
@@ -124,6 +124,10 @@ class AppApi:
         try:
             player = self._require_player()
             files = json.loads(files_json)
+            if not isinstance(files, list) or not files:
+                raise SecureAudioError("Debes seleccionar un archivo AUDX.")
+            if len(files) > 1:
+                raise SecureAudioError("Solo se permite cargar un archivo AUDX por vez.")
             entries = player.load_playlist(files, password)
             return {
                 "ok": True,
@@ -179,8 +183,8 @@ class AppApi:
             raise SecureAudioError("Debes desbloquear la zona de administrador con el codigo.")
 
     def _require_player(self) -> SecureVlcPlayer:
-        if self.player is None:
-            if self.player_init_error:
-                raise SecureAudioError(self.player_init_error)
+        if self._player is None:
+            if self._player_init_error:
+                raise SecureAudioError(self._player_init_error)
             raise SecureAudioError("Motor de audio no disponible.")
-        return self.player
+        return self._player

@@ -23,6 +23,16 @@ class CryptoTests(unittest.TestCase):
         self.assertEqual(bytes(decrypted.audio_bytes), audio_bytes)
         self.assertEqual(decrypted.metadata["track_title"], "Track 01")
 
+    def test_new_container_uses_scrypt_kdf(self) -> None:
+        crypto = AudxCrypto(time_cost=1, memory_cost_kib=8192, parallelism=1)
+        encrypted = crypto.encrypt_bytes(
+            b"ID3" + b"z" * 64,
+            password="correct horse battery",
+            metadata={"original_name": "x", "track_title": "x", "artist": "", "album": "", "duration_seconds": 1.0},
+        )
+        header, _, _ = crypto.parse_container(encrypted)
+        self.assertEqual(header["kdf"], "scrypt")
+        self.assertEqual(header["kdf_params"], {"n": 2**14, "r": 8, "p": 1})
     def test_tampered_ciphertext_fails_authentication(self) -> None:
         crypto = AudxCrypto(time_cost=1, memory_cost_kib=8192, parallelism=1)
         encrypted = crypto.encrypt_bytes(
@@ -44,3 +54,4 @@ class CryptoTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

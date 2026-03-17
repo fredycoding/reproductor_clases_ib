@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import base64
 import hashlib
@@ -57,7 +57,7 @@ class AudxCrypto:
         self.time_cost = time_cost
         self.memory_cost_kib = memory_cost_kib
         self.parallelism = parallelism
-        self.kdf_name = "Argon2id" if hash_secret_raw is not None else "scrypt"
+        self.kdf_name = "scrypt"
 
     def encrypt_file(self, source_path: str | Path, password: str, output_dir: str | Path) -> Path:
         source = Path(source_path)

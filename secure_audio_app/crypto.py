@@ -17,6 +17,7 @@ except ModuleNotFoundError:
     Type = None
     hash_secret_raw = None
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 from mutagen import File as MutagenFile
 
 
@@ -225,16 +226,29 @@ class AudxCrypto:
                 type=Type.ID,
             )
         if kdf_name == "scrypt":
-            return hashlib.scrypt(
+            n = int(kdf_params.get("n", 2**14))
+            r = int(kdf_params.get("r", 8))
+            p = int(kdf_params.get("p", 1))
+            return self._derive_key_scrypt(password=password, salt=salt, n=n, r=r, p=p)
+        raise SecureAudioError("La derivacion de clave configurada no esta disponible.")
+
+    @staticmethod
+    def _derive_key_scrypt(password: str, salt: bytes, n: int, r: int, p: int) -> bytes:
+        scrypt_fn = getattr(hashlib, "scrypt", None)
+        if callable(scrypt_fn):
+            return scrypt_fn(
                 password.encode("utf-8"),
                 salt=salt,
-                n=int(kdf_params.get("n", 2**14)),
-                r=int(kdf_params.get("r", 8)),
-                p=int(kdf_params.get("p", 1)),
+                n=n,
+                r=r,
+                p=p,
                 dklen=32,
                 maxmem=0,
             )
-        raise SecureAudioError("La derivacion de clave configurada no esta disponible.")
+
+        # Some macOS system Pythons do not expose hashlib.scrypt.
+        kdf = Scrypt(salt=salt, length=32, n=n, r=r, p=p)
+        return kdf.derive(password.encode("utf-8"))
 
     @staticmethod
     def _canonical_json(data: dict[str, Any]) -> bytes:

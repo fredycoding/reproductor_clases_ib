@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import unittest
+from unittest.mock import patch
 
+import secure_audio_app.crypto as crypto_module
 from secure_audio_app.crypto import AuthenticationError, AudxCrypto, InvalidContainerError
 
 
@@ -33,6 +35,15 @@ class CryptoTests(unittest.TestCase):
         header, _, _ = crypto.parse_container(encrypted)
         self.assertEqual(header["kdf"], "scrypt")
         self.assertEqual(header["kdf_params"], {"n": 2**14, "r": 8, "p": 1})
+
+    def test_scrypt_fallback_without_hashlib_support(self) -> None:
+        crypto = AudxCrypto(time_cost=1, memory_cost_kib=8192, parallelism=1)
+        metadata = {"original_name": "track01", "track_title": "Track 01", "artist": "", "album": "", "duration_seconds": 1.0}
+        with patch.object(crypto_module.hashlib, "scrypt", None):
+            encrypted = crypto.encrypt_bytes(b"ID3" + b"x" * 256, password="correct horse battery", metadata=metadata)
+            decrypted = crypto.decrypt_bytes(encrypted, password="correct horse battery")
+        self.assertEqual(bytes(decrypted.audio_bytes), b"ID3" + b"x" * 256)
+
     def test_tampered_ciphertext_fails_authentication(self) -> None:
         crypto = AudxCrypto(time_cost=1, memory_cost_kib=8192, parallelism=1)
         encrypted = crypto.encrypt_bytes(
@@ -54,4 +65,3 @@ class CryptoTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

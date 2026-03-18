@@ -1,4 +1,12 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
-pip install pyinstaller
-pyinstaller --noconfirm --windowed --name SecureAudioPlayer --add-data "secure_audio_app/frontend:secure_audio_app/frontend" app.py
+
+pip install --upgrade pip pyinstaller
+pip install -r requirements.txt
+
+python - <<'PY'
+import tkinter, vlc, mutagen, cryptography
+print("Runtime Tkinter OK")
+PY
+
+pyinstaller --noconfirm --clean --windowed --name Reproductor app.py

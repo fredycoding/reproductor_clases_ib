@@ -24,3 +24,4 @@ Thumbs.db
 .mypy_cache/
 
 .vscode/
+release/

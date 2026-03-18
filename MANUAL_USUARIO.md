@@ -1,4 +1,4 @@
-﻿# Manual de Usuario - Reproductor Seguro de Audio
+﻿# Manual de Usuario - Reproductor Seguro de Audio (Tkinter)
 
 Este manual esta pensado para personas sin conocimientos tecnicos.
 
@@ -32,11 +32,11 @@ Tambien puedes cambiar idioma entre `ES` y `EN`.
 ## 4) Uso normal (reproducir archivos `.audx`)
 
 1. Entra a **Zona de usuario**.
-2. Clic en **Abrir biblioteca**.
-3. Selecciona uno o varios archivos `.audx`.
+2. Clic en **Abrir audio AUDX**.
+3. Selecciona un archivo `.audx`.
 4. Escribe la **clave de reproduccion**.
-5. Clic en **Cargar biblioteca**.
-6. Selecciona una pista y usa los controles de reproduccion.
+5. Clic en **Cargar audio**.
+6. Selecciona la pista y usa los controles de reproduccion.
 
 Controles disponibles:
 
@@ -69,28 +69,22 @@ Resultado:
 
 ## 7) Mensajes comunes y solucion
 
-## "Windows protegió su PC" (SmartScreen)
+### "Windows protegió su PC" (SmartScreen)
 
 Puede aparecer en ejecutables nuevos.
 
 - Clic en **Mas informacion**.
 - Luego **Ejecutar de todas formas** (si el archivo viene de una fuente confiable).
 
-## "No se pudo iniciar la interfaz grafica"
+### No carga el audio
 
-1. Cierra la app por completo.
-2. Asegurate de ejecutar desde disco local (por ejemplo `C:\Reproductor`).
-3. Verifica que copiaste la carpeta completa, no solo el `.exe`.
-4. Si persiste, pide al soporte una version nueva del paquete.
-
-## No carga la biblioteca
-
-- Verifica que seleccionaste archivos `.audx` validos.
+- Verifica que seleccionaste archivo `.audx` valido.
 - Verifica que la clave de reproduccion sea correcta.
 
-## No suena el audio
+### No suena el audio
 
 - Revisa volumen de Windows y de la app.
+- Verifica que VLC este instalado.
 - Cierra otros programas de audio y vuelve a intentar.
 
 ## 8) Recomendaciones de uso

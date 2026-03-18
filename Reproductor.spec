@@ -8,7 +8,7 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=['vlc', 'mutagen'],
+    hiddenimports=['vlc', 'mutagen', 'customtkinter'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -54,3 +54,4 @@ coll = COLLECT(
     upx_exclude=[],
     name='Reproductor',
 )
+

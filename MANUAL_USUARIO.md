@@ -1,4 +1,4 @@
-﻿# Manual de Usuario - Reproductor Seguro de Audio (Tkinter)
+﻿# Manual de Usuario - Reproductor Seguro de Audio (CustomTkinter)
 
 Este manual esta pensado para personas sin conocimientos tecnicos.
 
@@ -101,3 +101,4 @@ Si tienes un error, reporta:
 - Paso exacto donde fallo.
 - Nombre del archivo usado (`.audx` o `.mp3`).
 - Version de Windows.
+

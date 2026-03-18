@@ -1,11 +1,11 @@
-﻿# Reproductor Seguro de Audio (Tkinter)
+﻿# Reproductor Seguro de Audio (CustomTkinter)
 
 Aplicacion de escritorio en Python para preparar y reproducir audios protegidos en formato `.audx`.
 
 - Manual para usuarios finales: [MANUAL_USUARIO.md](MANUAL_USUARIO.md)
 - En modo administrador convierte `.mp3` a `.audx`.
 - En modo usuario carga y reproduce `.audx`.
-- Interfaz de escritorio nativa con `tkinter` (sin PyWeb/PyQt).
+- Interfaz de escritorio nativa moderna con `customtkinter` (sin PyWeb/PyQt).
 
 ## 1) Objetivo del software
 
@@ -33,9 +33,9 @@ Flujo general:
 ## 3) Arquitectura tecnica (resumen)
 
 - `app.py`
-  Punto de entrada oficial de escritorio (Tkinter).
+  Punto de entrada oficial de escritorio (CustomTkinter).
 
-- `secure_audio_app/tkinter_app.py`
+- `secure_audio_app/customtkinter_app.py`
   Interfaz completa (modo admin/usuario, controles, estado).
 
 - `secure_audio_app/crypto.py`
@@ -140,10 +140,12 @@ Modelo detallado: [threat_model.md](threat_model.md)
 - [scripts/build_windows.ps1](scripts/build_windows.ps1)
 - [scripts/build_macos.sh](scripts/build_macos.sh)
 - [scripts/build_linux.sh](scripts/build_linux.sh)
-- [secure_audio_app/tkinter_app.py](secure_audio_app/tkinter_app.py)
+- [secure_audio_app/customtkinter_app.py](secure_audio_app/customtkinter_app.py)
 - [secure_audio_app/crypto.py](secure_audio_app/crypto.py)
 - [secure_audio_app/player.py](secure_audio_app/player.py)
 - [architecture.md](architecture.md)
 - [file_format_spec.md](file_format_spec.md)
 - [threat_model.md](threat_model.md)
+
+
 

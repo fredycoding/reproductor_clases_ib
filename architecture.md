@@ -7,7 +7,7 @@ The application is a local-first desktop player for encrypted audio containers.
 It uses:
 
 - Python backend for cryptography and media orchestration.
-- `tkinter` for the desktop UI.
+- `customtkinter` for the desktop UI.
 - `python-vlc` for playback from in-memory decrypted bytes.
 - A proprietary `.audx` container with authenticated encryption.
 
@@ -20,7 +20,7 @@ It uses:
 
 ### 2. Desktop UI
 
-- File: `secure_audio_app/tkinter_app.py`
+- File: `secure_audio_app/customtkinter_app.py`
 - Provides:
   - admin unlock flow
   - MP3 to AUDX encryption workflow
@@ -60,3 +60,4 @@ It uses:
 - Windows: `Reproductor.spec` + `scripts/build_windows.ps1`
 - macOS: `scripts/build_macos.sh`
 - Linux: `scripts/build_linux.sh`
+

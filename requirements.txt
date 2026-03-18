@@ -3,3 +3,4 @@ python-vlc>=3.0.20123
 mutagen>=1.47.0
 platformdirs>=4.2.0
 argon2-cffi>=23.1.0
+customtkinter>=5.2.2

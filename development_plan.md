@@ -1,59 +1,30 @@
-# Development Plan
+﻿# Development Plan
 
-## Phase 1: Foundation
+## Current Status
 
-- Create project structure
-- Add application paths and config helpers
-- Add architecture, threat model, and file format specification
-- Add initial README and requirements
+The application is in a consolidated desktop stage with a single UI stack (`customtkinter`).
 
-Validation:
+Completed:
 
-- import checks
-- path resolution tests
+- encrypted `.audx` container flow
+- admin and user modes
+- in-memory playback with VLC
+- packaging scripts for Windows/macOS/Linux
+- bilingual UI (ES/EN) with in-code translations
+- UI state persistence on close/start
 
-## Phase 2: Cryptography and Container Format
+## Active Scope
 
-- Implement `.audx` container serialization
-- Implement Argon2id + AES-256-GCM encryption/decryption
-- Add strict parsing and malformed file checks
-- Add metadata extraction from MP3 files
+- keep documentation aligned with current behavior
+- improve usability details in user flow
+- maintain compatibility and packaging stability
 
-Validation:
+## Validation Checklist
 
-- round-trip tests
-- tamper tests
-- malformed header tests
-
-## Phase 3: Playback Engine
-
-- Implement in-memory byte stream for VLC callbacks
-- Add playlist and transport controls
-- Add repeat and shuffle behavior
-- Add safe buffer cleanup paths
-
-Validation:
-
-- player state tests where possible
-- static checks
-
-## Phase 4: Desktop UI
-
-- Build local frontend with playlist and transport UI
-- Connect frontend to Python API through pywebview
-- Add keyboard shortcuts and user feedback
-
-Validation:
-
-- manual end-to-end test on local machine
-
-## Phase 5: Packaging and Documentation
-
-- Add PyInstaller build commands
-- Document Windows/macOS/Linux packaging steps
-- Finalize README with workflow and threat model summary
-
-Validation:
-
-- syntax compile
-- run unit tests
+- `python -m py_compile app.py secure_audio_app/customtkinter_app.py`
+- `python -m unittest discover -s tests`
+- manual smoke test:
+  1. MP3 -> AUDX in admin mode
+  2. load AUDX in user mode
+  3. verify key panel hides after successful load
+  4. reopen with `Abrir audio AUDX` and verify key panel returns

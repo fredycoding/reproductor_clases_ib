@@ -1,104 +1,108 @@
-﻿# Manual de Usuario - Reproductor Seguro de Audio (CustomTkinter)
+﻿# Manual de Usuario - Reproductor Audio
 
-Este manual esta pensado para personas sin conocimientos tecnicos.
+Este manual explica el uso diario de la aplicacion.
 
 ## 1) Para que sirve
 
 La aplicacion permite:
 
-- Abrir y reproducir archivos protegidos `.audx`.
-- Preparar una biblioteca protegida a partir de archivos `.mp3` (solo en modo administrador).
+- Reproducir archivos protegidos `.audx` (modo usuario).
+- Crear archivos `.audx` desde `.mp3` (modo admin).
 
-## 2) Instalacion rapida (usuario final)
+## 2) Instalacion para usuario final
 
-1. Recibe una carpeta llamada `Reproductor`.
-2. Copia esa carpeta completa a tu disco local, por ejemplo: `C:\Reproductor`.
-3. Abre `Reproductor.exe` con doble clic.
+1. Recibe la carpeta `Reproductor`.
+2. Copia la carpeta completa a disco local, por ejemplo `C:\Reproductor`.
+3. Abre `Reproductor.exe`.
 
-Importante:
+Recomendaciones:
 
-- No ejecutes la app desde archivo `.zip` sin extraer.
-- No ejecutes desde red/servidor compartido.
+- No ejecutar desde `.zip` sin extraer.
+- No ejecutar desde red compartida.
 
 ## 3) Pantalla principal
 
-La app tiene 2 zonas:
+La app tiene:
 
-- Zona de usuario: para abrir y reproducir archivos `.audx`.
-- Zona de administrador: para convertir `.mp3` en `.audx`.
+- Zona de usuario
+- Zona de administrador
+- Selector de idioma `ES/EN`
 
-Tambien puedes cambiar idioma entre `ES` y `EN`.
+## 4) Como reproducir un archivo `.audx`
 
-## 4) Uso normal (reproducir archivos `.audx`)
+1. Entra a `Zona de usuario`.
+2. Clic en `Abrir audio AUDX`.
+3. Selecciona el archivo `.audx`.
+4. Escribe la clave de reproduccion.
+5. Clic en `Cargar audio`.
 
-1. Entra a **Zona de usuario**.
-2. Clic en **Abrir audio AUDX**.
-3. Selecciona un archivo `.audx`.
-4. Escribe la **clave de reproduccion**.
-5. Clic en **Cargar audio**.
-6. Selecciona la pista y usa los controles de reproduccion.
+Importante:
 
-Controles disponibles:
+- Si la clave es correcta, el panel de clave se oculta automaticamente.
+- Para cargar otro archivo, vuelve a usar `Abrir audio AUDX`; ahi reaparece el panel de clave.
 
-- Play/Pausa
-- Detener
-- Anterior / Siguiente
-- Barra de avance
-- Volumen
+## 5) Controles disponibles
 
-## 5) Uso administrador (crear `.audx` desde `.mp3`)
+- `Play/Pausa`
+- `Detener`
+- `Barra de avance`
+- `Volumen`
 
-1. Clic en **Ingresar al admin**.
-2. Escribe el codigo de administrador y desbloquea.
-3. Clic en **Seleccionar MP3**.
-4. Clic en **Examinar** para elegir carpeta de salida.
-5. Escribe la **clave de acceso**.
-6. Clic en **Preparar biblioteca**.
+Atajo activo:
+
+- `Espacio`: Play/Pausa
+
+Nota:
+
+- Los botones `Anterior` y `Siguiente` ya no se usan en esta version.
+
+## 6) Como crear archivos `.audx` (admin)
+
+1. Clic en `Ingresar al admin`.
+2. Ingresa el codigo de administrador.
+3. Clic en `Seleccionar MP3`.
+4. Clic en `Examinar` para elegir carpeta de salida.
+5. Escribe la clave de acceso.
+6. Clic en `Preparar biblioteca`.
 
 Resultado:
 
-- Se crean archivos `.audx` en la carpeta elegida.
+- Se generan archivos `.audx` en la carpeta elegida.
 
-## 6) Atajos de teclado
+## 7) Estado que la app guarda al cerrar
 
-- `Espacio`: Play/Pausa
-- `Izquierda / Derecha`: mover 5 segundos
-- `Arriba / Abajo`: volumen
-- `N`: siguiente pista
-- `P`: pista anterior
+La app recuerda automaticamente:
 
-## 7) Mensajes comunes y solucion
+- idioma
+- tamano y posicion de ventana
+- modo actual
+- volumen
+- carpeta de salida del admin
 
-### "Windows protegió su PC" (SmartScreen)
-
-Puede aparecer en ejecutables nuevos.
-
-- Clic en **Mas informacion**.
-- Luego **Ejecutar de todas formas** (si el archivo viene de una fuente confiable).
+## 8) Problemas comunes
 
 ### No carga el audio
 
-- Verifica que seleccionaste archivo `.audx` valido.
+- Verifica que el archivo sea `.audx` valido.
 - Verifica que la clave de reproduccion sea correcta.
 
-### No suena el audio
+### No se escucha audio
 
-- Revisa volumen de Windows y de la app.
-- Verifica que VLC este instalado.
-- Cierra otros programas de audio y vuelve a intentar.
+- Revisa volumen del sistema y de la app.
+- Verifica instalacion de VLC.
 
-## 8) Recomendaciones de uso
+### SmartScreen en Windows
 
-- Guarda respaldo de tus archivos `.audx`.
-- No compartas la clave por canales inseguros.
-- Si cambias la clave, vuelve a preparar la biblioteca.
+Si aparece `Windows protegió su PC`:
+
+1. Clic en `Mas informacion`.
+2. Clic en `Ejecutar de todas formas` (si el archivo es confiable).
 
 ## 9) Soporte
 
-Si tienes un error, reporta:
+Si reportas un error, envia:
 
-- Captura de pantalla del mensaje.
-- Paso exacto donde fallo.
-- Nombre del archivo usado (`.audx` o `.mp3`).
-- Version de Windows.
-
+- captura del mensaje
+- paso exacto donde falla
+- tipo de archivo usado (`.audx` o `.mp3`)
+- version de Windows

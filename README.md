@@ -1,8 +1,9 @@
-﻿# Reproductor Audio (CustomTkinter)
+# Reproductor Audio (CustomTkinter)
 
 Aplicacion de escritorio en Python para crear y reproducir audio protegido en formato `.audx`.
 
 - Manual de uso rapido: [MANUAL_USUARIO.md](MANUAL_USUARIO.md)
+- Guia de desarrollador (build/distribucion): [GUIA_DESARROLLADOR_BUILD.md](GUIA_DESARROLLADOR_BUILD.md)
 - Arquitectura tecnica: [architecture.md](architecture.md)
 - Especificacion del contenedor: [file_format_spec.md](file_format_spec.md)
 - Modelo de amenazas: [threat_model.md](threat_model.md)

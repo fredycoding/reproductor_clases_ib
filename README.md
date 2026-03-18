@@ -129,7 +129,7 @@ Referencia formal: [file_format_spec.md](file_format_spec.md)
 
 ## 12) Seguridad y limites
 
-El proyecto reduce exposicion de audio en claro, pero en escritorio no existe proteccion absoluta.
+El proyecto reduce exposicion de audio en claro.
 
 Modelo detallado: [threat_model.md](threat_model.md)
 
@@ -146,3 +146,4 @@ Modelo detallado: [threat_model.md](threat_model.md)
 - [architecture.md](architecture.md)
 - [file_format_spec.md](file_format_spec.md)
 - [threat_model.md](threat_model.md)
+
